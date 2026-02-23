@@ -13,6 +13,7 @@ interface GameAlert {
 interface ExtendedBuilding extends Building {
   efficiency: number
   workers: number
+  count: number
 }
 
 interface ExtendedPopulation extends Population {
@@ -112,7 +113,8 @@ export const useGameStore = defineStore('game', {
           constructionTime: 20,
           tileId: 'tile_1',
           efficiency: 0.85,
-          workers: 10
+          workers: 10,
+          count: 1
         },
         {
           id: 'farm_1',
@@ -129,7 +131,8 @@ export const useGameStore = defineStore('game', {
           constructionTime: 30,
           tileId: 'tile_2',
           efficiency: 0.92,
-          workers: 20
+          workers: 20,
+          count: 1
         },
         {
           id: 'quarry_1',
@@ -146,7 +149,8 @@ export const useGameStore = defineStore('game', {
           constructionTime: 35,
           tileId: 'tile_3',
           efficiency: 0.78,
-          workers: 15
+          workers: 15,
+          count: 1
         }
       ]
 
@@ -388,26 +392,38 @@ export const useGameStore = defineStore('game', {
     },
 
     addBuilding(type: BuildingType) {
-      const buildingCount = this.buildings.length
-      const newBuilding: ExtendedBuilding = {
-        id: `${type}_${Date.now()}`,
-        name: this.getBuildingName(type),
-        type,
-        minEra: Era.STONE_AGE,
-        baseWorkers: 10,
-        maxWorkers: 20,
-        baseThroughput: 80,
-        productionMethods: [],
-        level: 1,
-        experience: 0,
-        constructionCost: { wood: 50, stone: 20 },
-        constructionTime: 20,
-        tileId: `tile_${buildingCount + 1}`,
-        efficiency: 1.0,
-        workers: 0
+      const existingBuilding = this.buildings.find(b => b.type === type)
+      
+      if (existingBuilding) {
+        existingBuilding.count += 1
+        existingBuilding.workers = Math.min(
+          existingBuilding.workers + existingBuilding.baseWorkers,
+          existingBuilding.maxWorkers * existingBuilding.count
+        )
+        this.buildings = [...this.buildings]
+        this.addAlert('success', '建筑扩建', `${this.getBuildingName(type)}数量增加到 ${existingBuilding.count}`)
+      } else {
+        const newBuilding: ExtendedBuilding = {
+          id: `${type}_1`,
+          name: this.getBuildingName(type),
+          type,
+          minEra: Era.STONE_AGE,
+          baseWorkers: 10,
+          maxWorkers: 20,
+          baseThroughput: 80,
+          productionMethods: [],
+          level: 1,
+          experience: 0,
+          constructionCost: { wood: 50, stone: 20 },
+          constructionTime: 20,
+          tileId: `tile_${this.buildings.length + 1}`,
+          efficiency: 1.0,
+          workers: 0,
+          count: 1
+        }
+        this.buildings = [...this.buildings, newBuilding]
+        this.addAlert('success', '建筑完成', `已建造新的${this.getBuildingName(type)}`)
       }
-      this.buildings = [...this.buildings, newBuilding]
-      this.addAlert('success', '建筑完成', `已建造新的${this.getBuildingName(type)}`)
     },
 
     getBuildingName(type: BuildingType): string {

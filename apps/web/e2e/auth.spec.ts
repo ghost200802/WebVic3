@@ -57,14 +57,18 @@ test.describe('Authentication', () => {
     await page.click('nav a:has-text("生产")')
     await expect(page).toHaveURL('/production')
     
-    const initialBuildings = await page.locator('main .bg-slate-700.rounded.p-3').count()
+    const forestryCard = page.locator('main .bg-slate-700.rounded.p-3').filter({ hasText: '林场' })
+    const initialBadge = forestryCard.locator('.bg-blue-600.rounded-full')
+    const initialBadgeText = await initialBadge.textContent()
+    const initialCount = parseInt(initialBadgeText?.replace('x', '') || '1')
     
     await page.click('button:has-text("+ 新建林场")')
     
     await page.waitForTimeout(500)
     
-    const newBuildingCount = await page.locator('main .bg-slate-700.rounded.p-3').count()
-    expect(newBuildingCount).toBe(initialBuildings + 1)
+    const newBadgeText = await initialBadge.textContent()
+    const newCount = parseInt(newBadgeText?.replace('x', '') || '1')
+    expect(newCount).toBe(initialCount + 1)
   })
 
   test('should buy goods in market', async ({ page }) => {

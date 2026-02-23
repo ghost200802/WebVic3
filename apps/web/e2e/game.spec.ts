@@ -94,20 +94,51 @@ test.describe('Production', () => {
     await expect(page.locator('main').getByText(/效率:/).first()).toBeVisible()
   })
 
-  test('should add multiple building types', async ({ page }) => {
+  test('should show building count badge', async ({ page }) => {
+    const countBadge = page.locator('main .bg-blue-600.rounded-full').first()
+    await expect(countBadge).toBeVisible()
+  })
+
+  test('should stack same building types', async ({ page }) => {
     const initialCount = await page.locator('main .bg-slate-700.rounded.p-3').count()
     
     await page.click('button:has-text("+ 新建林场")')
     await page.waitForTimeout(300)
     
-    await page.click('button:has-text("+ 新建农场")')
+    const afterFirstBuild = await page.locator('main .bg-slate-700.rounded.p-3').count()
+    
+    await page.click('button:has-text("+ 新建林场")')
     await page.waitForTimeout(300)
     
-    await page.click('button:has-text("+ 新建矿场")')
+    const afterSecondBuild = await page.locator('main .bg-slate-700.rounded.p-3').count()
+    
+    expect(afterFirstBuild).toBe(initialCount)
+    expect(afterSecondBuild).toBe(initialCount)
+    
+    const forestryCard = page.locator('main .bg-slate-700.rounded.p-3').filter({ hasText: '林场' })
+    const countBadge = forestryCard.locator('.bg-blue-600.rounded-full')
+    const badgeText = await countBadge.textContent()
+    expect(badgeText).toContain('x')
+  })
+
+  test('should add new building type as separate card', async ({ page }) => {
+    const initialCount = await page.locator('main .bg-slate-700.rounded.p-3').count()
+    
+    await page.click('button:has-text("+ 新建牧场")')
     await page.waitForTimeout(300)
     
     const finalCount = await page.locator('main .bg-slate-700.rounded.p-3').count()
-    expect(finalCount).toBe(initialCount + 3)
+    expect(finalCount).toBe(initialCount + 1)
+  })
+
+  test('should show scaled production output', async ({ page }) => {
+    await expect(page.locator('main').getByText(/产量:/).first()).toBeVisible()
+  })
+
+  test('should show scaled worker capacity', async ({ page }) => {
+    const workerText = await page.locator('main').getByText(/工人:/).first().textContent()
+    expect(workerText).toBeTruthy()
+    expect(workerText).toContain('/')
   })
 })
 
