@@ -1,21 +1,20 @@
 <template>
-  <div
-    id="app"
-    class="min-h-screen bg-gray-100"
-  >
-    <header class="bg-blue-600 text-white p-4">
-      <h1 class="text-2xl font-bold">
-        WebVic3 - 经济模拟策略游戏
-      </h1>
-    </header>
-    <main class="container mx-auto p-4">
-      <p>项目初始化完成！</p>
-    </main>
+  <div id="app">
+    <router-view />
   </div>
 </template>
 
 <script setup lang="ts">
 </script>
 
-<style scoped>
+<style>
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+#app {
+  min-height: 100vh;
+}
 </style>

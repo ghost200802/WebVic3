@@ -1,4 +1,4 @@
-import { Technology, Era } from '../../models'
+import { Technology } from '../../models'
 import { TECHNOLOGIES } from '../../models'
 
 export interface ITechnologyTree {

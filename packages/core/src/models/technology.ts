@@ -31,7 +31,7 @@ export interface ResearchQueue {
     tech: string
     progress: number
     estimatedCompletion: GameDate
-  }
+  } | null
   queue: string[]
   researchSpeed: number
 }
