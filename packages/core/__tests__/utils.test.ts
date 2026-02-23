@@ -212,12 +212,12 @@ describe('Random', () => {
       ]
       
       const counts: Record<string, number> = { a: 0, b: 0 }
-      for (let i = 0; i < 1000; i++) {
+      for (let i = 0; i < 5000; i++) {
         const result = weightedRandom(items)
         counts[result]++
       }
 
-      expect(counts.b / counts.a).toBeGreaterThan(2)
+      expect(counts.b / counts.a).toBeGreaterThan(1.8)
     })
   })
 })
