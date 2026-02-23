@@ -84,44 +84,61 @@ test.describe('Production', () => {
     await page.waitForTimeout(500)
   })
 
-  test('should display existing buildings', async ({ page }) => {
+  test('should display empty state when no buildings', async ({ page }) => {
     const buildings = page.locator('main .bg-slate-700.rounded.p-3')
     const count = await buildings.count()
-    expect(count).toBeGreaterThanOrEqual(1)
+    
+    if (count === 0) {
+      await expect(page.locator('main').getByText('暂无建筑')).toBeVisible()
+    }
+  })
+
+  test('should show building after construction', async ({ page }) => {
+    await page.click('button:has-text("+ 新建林场")')
+    await page.waitForTimeout(300)
+    
+    const buildings = page.locator('main .bg-slate-700.rounded.p-3')
+    await expect(buildings.first()).toBeVisible()
   })
 
   test('should show building efficiency', async ({ page }) => {
+    await page.click('button:has-text("+ 新建林场")')
+    await page.waitForTimeout(300)
+    
     await expect(page.locator('main').getByText(/效率:/).first()).toBeVisible()
   })
 
   test('should show building count badge', async ({ page }) => {
+    await page.click('button:has-text("+ 新建林场")')
+    await page.waitForTimeout(300)
+    
     const countBadge = page.locator('main .bg-blue-600.rounded-full').first()
     await expect(countBadge).toBeVisible()
   })
 
   test('should stack same building types', async ({ page }) => {
-    const initialCount = await page.locator('main .bg-slate-700.rounded.p-3').count()
-    
     await page.click('button:has-text("+ 新建林场")')
     await page.waitForTimeout(300)
     
     const afterFirstBuild = await page.locator('main .bg-slate-700.rounded.p-3').count()
+    expect(afterFirstBuild).toBe(1)
     
     await page.click('button:has-text("+ 新建林场")')
     await page.waitForTimeout(300)
     
     const afterSecondBuild = await page.locator('main .bg-slate-700.rounded.p-3').count()
-    
-    expect(afterFirstBuild).toBe(initialCount)
-    expect(afterSecondBuild).toBe(initialCount)
+    expect(afterSecondBuild).toBe(1)
     
     const forestryCard = page.locator('main .bg-slate-700.rounded.p-3').filter({ hasText: '林场' })
     const countBadge = forestryCard.locator('.bg-blue-600.rounded-full')
     const badgeText = await countBadge.textContent()
-    expect(badgeText).toContain('x')
+    expect(badgeText).toBe('x2')
   })
 
   test('should add new building type as separate card', async ({ page }) => {
+    await page.click('button:has-text("+ 新建林场")')
+    await page.waitForTimeout(300)
+    
     const initialCount = await page.locator('main .bg-slate-700.rounded.p-3').count()
     
     await page.click('button:has-text("+ 新建牧场")')
@@ -132,10 +149,16 @@ test.describe('Production', () => {
   })
 
   test('should show scaled production output', async ({ page }) => {
+    await page.click('button:has-text("+ 新建林场")')
+    await page.waitForTimeout(300)
+    
     await expect(page.locator('main').getByText(/产量:/).first()).toBeVisible()
   })
 
   test('should show scaled worker capacity', async ({ page }) => {
+    await page.click('button:has-text("+ 新建林场")')
+    await page.waitForTimeout(300)
+    
     const workerText = await page.locator('main').getByText(/工人:/).first().textContent()
     expect(workerText).toBeTruthy()
     expect(workerText).toContain('/')

@@ -97,62 +97,7 @@ export const useGameStore = defineStore('game', {
         }
       }
 
-      this.buildings = [
-        {
-          id: 'forestry_1',
-          name: '林场',
-          type: BuildingType.FORESTRY,
-          minEra: Era.STONE_AGE,
-          baseWorkers: 10,
-          maxWorkers: 20,
-          baseThroughput: 80,
-          productionMethods: [],
-          level: 1,
-          experience: 0,
-          constructionCost: { wood: 50, stone: 20 },
-          constructionTime: 20,
-          tileId: 'tile_1',
-          efficiency: 0.85,
-          workers: 10,
-          count: 1
-        },
-        {
-          id: 'farm_1',
-          name: '农场',
-          type: BuildingType.FARM,
-          minEra: Era.STONE_AGE,
-          baseWorkers: 10,
-          maxWorkers: 20,
-          baseThroughput: 100,
-          productionMethods: ['slash_burn'],
-          level: 1,
-          experience: 0,
-          constructionCost: { wood: 30, stone: 10 },
-          constructionTime: 30,
-          tileId: 'tile_2',
-          efficiency: 0.92,
-          workers: 20,
-          count: 1
-        },
-        {
-          id: 'quarry_1',
-          name: '矿场',
-          type: BuildingType.QUARRY,
-          minEra: Era.STONE_AGE,
-          baseWorkers: 12,
-          maxWorkers: 20,
-          baseThroughput: 60,
-          productionMethods: [],
-          level: 1,
-          experience: 0,
-          constructionCost: { wood: 40, stone: 15 },
-          constructionTime: 35,
-          tileId: 'tile_3',
-          efficiency: 0.78,
-          workers: 15,
-          count: 1
-        }
-      ]
+      this.buildings = []
 
       const farmerGroup: PopulationGroup = {
         id: 'group_farmers',
