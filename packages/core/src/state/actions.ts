@@ -144,6 +144,28 @@ export interface AddPopulationPayload {
   netMigration: number
 }
 
+export interface AddTileStoragePayload {
+  tileId: string
+  goodsId: string
+  amount: number
+}
+
+export interface RemoveTileStoragePayload {
+  tileId: string
+  goodsId: string
+  amount: number
+}
+
+export interface AddGlobalStoragePayload {
+  goodsId: string
+  amount: number
+}
+
+export interface RemoveGlobalStoragePayload {
+  goodsId: string
+  amount: number
+}
+
 export const ActionTypes = {
   TICK_TIME: 'TICK_TIME',
   SET_PAUSE: 'SET_PAUSE',
@@ -167,7 +189,11 @@ export const ActionTypes = {
   REMOVE_NOTIFICATION: 'REMOVE_NOTIFICATION',
   SET_RESOURCE_MONEY: 'SET_RESOURCE_MONEY',
   SET_GOODS_QUANTITY: 'SET_GOODS_QUANTITY',
-  ADD_POPULATION: 'ADD_POPULATION'
+  ADD_POPULATION: 'ADD_POPULATION',
+  ADD_TILE_STORAGE: 'ADD_TILE_STORAGE',
+  REMOVE_TILE_STORAGE: 'REMOVE_TILE_STORAGE',
+  ADD_GLOBAL_STORAGE: 'ADD_GLOBAL_STORAGE',
+  REMOVE_GLOBAL_STORAGE: 'REMOVE_GLOBAL_STORAGE'
 } as const
 
 export type ActionType = typeof ActionTypes[keyof typeof ActionTypes]
@@ -246,3 +272,15 @@ export const setGoodsQuantity = (goodsId: string, amount: number): GameAction =>
 
 export const addPopulation = (payload: AddPopulationPayload): GameAction =>
   createGameAction(ActionTypes.ADD_POPULATION, payload)
+
+export const addTileStorage = (tileId: string, goodsId: string, amount: number): GameAction =>
+  createGameAction(ActionTypes.ADD_TILE_STORAGE, { tileId, goodsId, amount } as AddTileStoragePayload)
+
+export const removeTileStorage = (tileId: string, goodsId: string, amount: number): GameAction =>
+  createGameAction(ActionTypes.REMOVE_TILE_STORAGE, { tileId, goodsId, amount } as RemoveTileStoragePayload)
+
+export const addGlobalStorage = (goodsId: string, amount: number): GameAction =>
+  createGameAction(ActionTypes.ADD_GLOBAL_STORAGE, { goodsId, amount } as AddGlobalStoragePayload)
+
+export const removeGlobalStorage = (goodsId: string, amount: number): GameAction =>
+  createGameAction(ActionTypes.REMOVE_GLOBAL_STORAGE, { goodsId, amount } as RemoveGlobalStoragePayload)

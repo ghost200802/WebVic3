@@ -107,6 +107,7 @@ export class GameStateProvider implements IGameStateProvider {
       markets: rest.markets,
       technologies: rest.technologies,
       resources: rest.resources,
+      globalStorage: rest.globalStorage,
       settings: rest.settings
     }
   }
@@ -116,6 +117,7 @@ export class GameStateProvider implements IGameStateProvider {
       ...data,
       isPaused: false,
       timeMultiplier: 1,
+      globalStorage: data.globalStorage || new Map(),
       notifications: [],
       researchQueue: {
         current: null,

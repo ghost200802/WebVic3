@@ -94,7 +94,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, onMounted } from 'vue'
+import { computed } from 'vue'
 import { useGame } from '../composables/useGame'
 import { Era, BuildingType } from '@webvic3/core'
 import StatCard from '../components/dashboard/StatCard.vue'

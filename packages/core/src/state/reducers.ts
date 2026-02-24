@@ -49,6 +49,14 @@ export const rootReducer = (state: GameState, action: GameAction): GameState => 
       return setGoodsQuantityReducer(state, action)
     case ActionTypes.ADD_POPULATION:
       return addPopulationReducer(state, action)
+    case ActionTypes.ADD_TILE_STORAGE:
+      return addTileStorageReducer(state, action)
+    case ActionTypes.REMOVE_TILE_STORAGE:
+      return removeTileStorageReducer(state, action)
+    case ActionTypes.ADD_GLOBAL_STORAGE:
+      return addGlobalStorageReducer(state, action)
+    case ActionTypes.REMOVE_GLOBAL_STORAGE:
+      return removeGlobalStorageReducer(state, action)
     default:
       return state
   }
@@ -100,6 +108,13 @@ const createBuildingReducer = (state: GameState, action: GameAction): GameState 
   const config = Object.values(BUILDING_CONFIGS).find(c => c.type === type)
   if (!config) return state
   
+  const tile = state.tiles.get(tileId)
+  if (!tile) return state
+  
+  if (tile.usedArea + config.area > tile.buildableArea) {
+    return state
+  }
+  
   const newBuilding = {
     id,
     name: config.name,
@@ -117,9 +132,16 @@ const createBuildingReducer = (state: GameState, action: GameAction): GameState 
     tileId
   }
   
+  const updatedTile = {
+    ...tile,
+    usedArea: tile.usedArea + config.area,
+    buildings: [...tile.buildings, id]
+  }
+  
   return {
     ...state,
-    buildings: new Map(state.buildings).set(id, newBuilding)
+    buildings: new Map(state.buildings).set(id, newBuilding),
+    tiles: new Map(state.tiles).set(tileId, updatedTile)
   }
 }
 
@@ -140,12 +162,29 @@ const upgradeBuildingReducer = (state: GameState, action: GameAction): GameState
 
 const removeBuildingReducer = (state: GameState, action: GameAction): GameState => {
   const { buildingId } = action.payload || {}
+  const building = state.buildings.get(buildingId)
+  
+  if (!building) return state
+  
+  const tile = state.tiles.get(building.tileId)
+  if (!tile) return state
+  
+  const config = Object.values(BUILDING_CONFIGS).find(c => c.type === building.type)
+  const area = config?.area || 0
+  
+  const updatedTile = {
+    ...tile,
+    usedArea: Math.max(0, tile.usedArea - area),
+    buildings: tile.buildings.filter(id => id !== buildingId)
+  }
+  
   const newBuildings = new Map(state.buildings)
   newBuildings.delete(buildingId)
   
   return {
     ...state,
-    buildings: newBuildings
+    buildings: newBuildings,
+    tiles: new Map(state.tiles).set(building.tileId, updatedTile)
   }
 }
 
@@ -411,6 +450,64 @@ const addPopulationReducer = (state: GameState, action: GameAction): GameState =
       deathRate: payload.deathRate,
       netMigration: payload.netMigration
     })
+  }
+}
+
+const addTileStorageReducer = (state: GameState, action: GameAction): GameState => {
+  const { tileId, goodsId, amount } = action.payload || {}
+  const tile = state.tiles.get(tileId)
+  
+  if (!tile) return state
+  
+  const currentAmount = tile.storage.get(goodsId) || 0
+  const newAmount = Math.max(0, currentAmount + amount)
+  
+  return {
+    ...state,
+    tiles: new Map(state.tiles).set(tileId, {
+      ...tile,
+      storage: new Map(tile.storage).set(goodsId, newAmount)
+    })
+  }
+}
+
+const removeTileStorageReducer = (state: GameState, action: GameAction): GameState => {
+  const { tileId, goodsId, amount } = action.payload || {}
+  const tile = state.tiles.get(tileId)
+  
+  if (!tile) return state
+  
+  const currentAmount = tile.storage.get(goodsId) || 0
+  const newAmount = Math.max(0, currentAmount - amount)
+  
+  return {
+    ...state,
+    tiles: new Map(state.tiles).set(tileId, {
+      ...tile,
+      storage: new Map(tile.storage).set(goodsId, newAmount)
+    })
+  }
+}
+
+const addGlobalStorageReducer = (state: GameState, action: GameAction): GameState => {
+  const { goodsId, amount } = action.payload || {}
+  const currentAmount = state.globalStorage.get(goodsId) || 0
+  const newAmount = Math.max(0, currentAmount + amount)
+  
+  return {
+    ...state,
+    globalStorage: new Map(state.globalStorage).set(goodsId, newAmount)
+  }
+}
+
+const removeGlobalStorageReducer = (state: GameState, action: GameAction): GameState => {
+  const { goodsId, amount } = action.payload || {}
+  const currentAmount = state.globalStorage.get(goodsId) || 0
+  const newAmount = Math.max(0, currentAmount - amount)
+  
+  return {
+    ...state,
+    globalStorage: new Map(state.globalStorage).set(goodsId, newAmount)
   }
 }
 

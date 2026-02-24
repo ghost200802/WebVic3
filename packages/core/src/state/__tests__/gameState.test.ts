@@ -34,7 +34,7 @@ describe('GameState', () => {
         isPaused: false,
         timeMultiplier: 2,
         tiles: new Map([['tile-1', { id: 'tile-1', type: 'plains' as any, coordinates: { x: 0, y: 0 } }]]),
-        buildings: new Map([['building-1', { id: 'building-1', name: 'Factory', type: 'factory' as any, minEra: Era.INDUSTRIAL, constructionCost: {}, constructionTime: 100, baseWorkers: 50, maxWorkers: 100, baseThroughput: 200, productionMethods: [], level: 1, experience: 0, tileId: 'tile-1' }]]),
+        buildings: new Map([['building-1', { id: 'building-1', name: 'Factory', type: 'factory' as any, minEra: Era.INDUSTRIAL, constructionCost: {}, constructionTime: 100, baseWorkers: 50, maxWorkers: 100, currentWorkers: 0, baseThroughput: 200, productionMethods: [], level: 1, experience: 0, tileId: 'tile-1' }]]),
         populations: new Map(),
         markets: new Map(),
         technologies: new Set(['tech-1', 'tech-2']),
@@ -47,6 +47,7 @@ describe('GameState', () => {
           money: 5000,
           goods: new Map([['wood', 100], ['steel', 50]])
         },
+        globalStorage: new Map([['food', 100], ['wood', 200]]),
         settings: {
           gameSpeed: 1,
           autoSaveInterval: 300,

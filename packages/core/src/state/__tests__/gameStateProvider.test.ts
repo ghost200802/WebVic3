@@ -18,7 +18,7 @@ describe('GameStateProvider', () => {
       tickCount: 0,
       isPaused: false,
       timeMultiplier: 1,
-      tiles: new Map(),
+      tiles: new Map([['tile-1', { id: 'tile-1', name: 'Test Tile', terrainComposition: new Map(), totalArea: 100, buildableArea: 100, usedArea: 0, resources: [], buildings: [], storage: new Map(), isExplored: false, isControlled: false, controlCost: 0, roadLevel: 0, developmentLevel: 0, developmentExperience: 0 }]]),
       buildings: new Map(),
       populations: new Map(),
       markets: new Map(),
@@ -32,6 +32,7 @@ describe('GameStateProvider', () => {
         money: 1000,
         goods: new Map()
       },
+      globalStorage: new Map(),
       settings: {
         gameSpeed: 1,
         autoSaveInterval: 300,

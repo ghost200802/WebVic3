@@ -9,6 +9,7 @@ export interface Tile {
   usedArea: number
   resources: ResourceDeposit[]
   buildings: string[]
+  storage: Map<string, number>
   isExplored: boolean
   isControlled: boolean
   controlCost: number

@@ -1,4 +1,4 @@
-import { GameStateProvider, Era, AgeGroup, EducationLevel, SocialClass, EmploymentStatus, BuildingType, type GameState, type PopulationGroup, type Population, type Building } from '@webvic3/core'
+import { GameStateProvider, Era, AgeGroup, EducationLevel, SocialClass, BuildingType, TerrainType, EmploymentStatus, type GameState, type PopulationGroup, type Population, type Building, type Tile } from '@webvic3/core'
 import { addPopulation as addPopulationAction } from '@webvic3/core'
 
 export interface GameAlert {
@@ -36,6 +36,70 @@ export const getGameStateProvider = (): GameStateProvider => {
 export const initializeGame = (): void => {
   const provider = getGameStateProvider()
 
+  const tile1: Tile = {
+    id: 'tile_1',
+    name: '中央平原',
+    terrainComposition: new Map([
+      [TerrainType.PLAINS, 0.6],
+      [TerrainType.FOREST, 0.2],
+      [TerrainType.WATER, 0.2]
+    ]),
+    totalArea: 100,
+    buildableArea: 60,
+    usedArea: 0,
+    resources: [],
+    buildings: [],
+    storage: new Map(),
+    isExplored: true,
+    isControlled: true,
+    controlCost: 100,
+    roadLevel: 1,
+    developmentLevel: 0,
+    developmentExperience: 0
+  }
+
+  const tile2: Tile = {
+    id: 'tile_2',
+    name: '东部森林',
+    terrainComposition: new Map([
+      [TerrainType.FOREST, 0.8],
+      [TerrainType.PLAINS, 0.2]
+    ]),
+    totalArea: 100,
+    buildableArea: 70,
+    usedArea: 0,
+    resources: [],
+    buildings: [],
+    storage: new Map(),
+    isExplored: true,
+    isControlled: true,
+    controlCost: 150,
+    roadLevel: 0,
+    developmentLevel: 0,
+    developmentExperience: 0
+  }
+
+  const tile3: Tile = {
+    id: 'tile_3',
+    name: '南部山地',
+    terrainComposition: new Map([
+      [TerrainType.MOUNTAIN, 0.7],
+      [TerrainType.PLAINS, 0.3]
+    ]),
+    totalArea: 100,
+    buildableArea: 30,
+    usedArea: 0,
+    resources: [],
+    buildings: [],
+    storage: new Map(),
+    isExplored: true,
+    isControlled: true,
+    controlCost: 200,
+    roadLevel: 0,
+    developmentLevel: 0,
+    developmentExperience: 0
+  }
+
   const gameState: GameState = {
     id: 'game_1',
     name: '新游戏',
@@ -43,7 +107,11 @@ export const initializeGame = (): void => {
     date: { year: 1, month: 1, day: 1 },
     era: Era.STONE_AGE,
     tickCount: 0,
-    tiles: new Map(),
+    tiles: new Map([
+      ['tile_1', tile1],
+      ['tile_2', tile2],
+      ['tile_3', tile3]
+    ]),
     buildings: new Map(),
     populations: new Map(),
     markets: new Map(),
@@ -61,6 +129,7 @@ export const initializeGame = (): void => {
         ['stone', 200]
       ])
     },
+    globalStorage: new Map(),
     settings: {
       gameSpeed: 1,
       autoSaveInterval: 5,

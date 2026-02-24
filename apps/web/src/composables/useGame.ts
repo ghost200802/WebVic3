@@ -1,6 +1,6 @@
 import { ref, computed, onUnmounted, type Ref } from 'vue'
 import { getGameStateProvider, initializeGame, getExtendedBuildings, getExtendedPopulations, getBuildingName, type GameAlert, type ExtendedBuilding, type ExtendedPopulation } from '../state/gameState'
-import { setPause, setResume, tickTime, addNotification, createBuilding as createBuildingAction, setProductionMethod, setWorkers, setResourceMoney, setGoodsQuantity } from '@webvic3/core'
+import { setPause, setResume, tickTime, addNotification, createBuilding as createBuildingAction, removeBuilding as removeBuildingAction, setProductionMethod, setWorkers, setResourceMoney, setGoodsQuantity } from '@webvic3/core'
 import type { GameState, BuildingType, GameDate, Era } from '@webvic3/core'
 
 const provider = getGameStateProvider()
@@ -116,10 +116,15 @@ export function useGame() {
     }
   }
 
-  const createBuilding = (type: BuildingType) => {
+  const createBuilding = (type: BuildingType, tileId: string) => {
     const id = `${type}_${Date.now()}_${Math.random()}`
-    provider.dispatch(createBuildingAction(id, type, `tile_${buildings.value.length + 1}`))
+    provider.dispatch(createBuildingAction(id, type, tileId))
     addAlert('success', '建筑完成', `已建造新的${getBuildingName(type)}`)
+  }
+
+  const removeBuilding = (buildingId: string) => {
+    provider.dispatch(removeBuildingAction(buildingId))
+    addAlert('success', '建筑已拆除', '建筑已被拆除')
   }
 
   const updateBuildingWorkers = (buildingType: BuildingType, totalWorkers: number) => {
@@ -212,6 +217,7 @@ export function useGame() {
     addAlert,
     removeAlert,
     createBuilding,
+    removeBuilding,
     updateBuildingWorkers,
     updateProductionMethod,
     purchaseGood,

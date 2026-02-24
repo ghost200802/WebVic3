@@ -17,7 +17,7 @@ describe('Reducers', () => {
       tickCount: 0,
       isPaused: false,
       timeMultiplier: 1,
-      tiles: new Map([['tile-1', { id: 'tile-1', type: 'plains' as any, coordinates: { x: 0, y: 0 } }]]),
+      tiles: new Map([['tile-1', { id: 'tile-1', name: 'Test Tile', terrainComposition: new Map(), totalArea: 100, buildableArea: 100, usedArea: 0, resources: [], buildings: [], storage: new Map(), isExplored: false, isControlled: false, controlCost: 0, roadLevel: 0, developmentLevel: 0, developmentExperience: 0 }]]),
       buildings: new Map([['building-1', { id: 'building-1', name: 'Farm', type: BuildingType.FARM, minEra: Era.STONE_AGE, constructionCost: {}, constructionTime: 30, baseWorkers: 10, maxWorkers: 20, currentWorkers: 0, baseThroughput: 100, productionMethods: [], level: 1, experience: 0, tileId: 'tile-1' }]]),
       populations: new Map([['pop-1', { id: 'pop-1', tileId: 'tile-1', totalPopulation: 100, groups: [{ id: 'group-1', size: 50, ageGroup: 'adult' as any, education: 'basic' as any, socialClass: 'worker' as any, employment: 'employed' as any, workplace: 'building-1', profession: 'farmer', wage: 10, wealth: 100, livingStandard: 50, needs: { survival: 100, basic: 80, improved: 50, luxury: 20 } }], ageDistribution: { children: 30, adults: 60, elders: 10 }, educationDistribution: {} as any, classDistribution: {} as any, employment: { total: 100, employed: 50, unemployed: 50, retired: 0 }, averageWage: 10, averageLivingStandard: 50, birthRate: 0.02, deathRate: 0.01, netMigration: 0 }]]),
       markets: new Map([['market-1', { id: 'market-1', name: 'Market 1', regions: ['region-1'], prices: new Map([['wood', { basePrice: 10, currentPrice: 10, previousPrice: 10, history: [] }]]), supply: new Map([['wood', 100]]), demand: new Map([['wood', 50]]), stockpile: new Map(), events: [] }]]),
@@ -31,6 +31,7 @@ describe('Reducers', () => {
         money: 1000,
         goods: new Map([['wood', 100]])
       },
+      globalStorage: new Map(),
       settings: {
         gameSpeed: 1,
         autoSaveInterval: 300,

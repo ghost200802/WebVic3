@@ -31,7 +31,7 @@ test.describe('Game Mechanics', () => {
   })
 
   test('should display population stats', async ({ page }) => {
-    await page.click('nav a:has-text("人口")')
+    await page.click('text=人口')
     await expect(page).toHaveURL('/population')
     
     await expect(page.locator('main').getByText('总人口').first()).toBeVisible()
@@ -40,7 +40,7 @@ test.describe('Game Mechanics', () => {
   })
 
   test('should show technology tree', async ({ page }) => {
-    await page.click('nav a:has-text("科技")')
+    await page.click('text=科技')
     await expect(page).toHaveURL('/technology')
     
     await expect(page.locator('main').getByText('科技树').first()).toBeVisible()
@@ -48,7 +48,7 @@ test.describe('Game Mechanics', () => {
   })
 
   test('should display building list', async ({ page }) => {
-    await page.click('nav a:has-text("生产")')
+    await page.click('text=生产')
     await expect(page).toHaveURL('/production')
     
     await expect(page.locator('main').getByText('建筑列表').first()).toBeVisible()
@@ -83,17 +83,19 @@ test.describe('Settings', () => {
   })
 
   test('should save game', async ({ page }) => {
-    await page.click('main button:has-text("保存游戏")')
+    await page.click('text=保存游戏')
   })
 })
 
 test.describe('Production', () => {
   test.beforeEach(async ({ page }) => {
+    await page.goto('/')
+    await page.evaluate(() => localStorage.clear())
     await page.goto('/production')
   })
 
   test('should display empty state when no buildings', async ({ page }) => {
-    const buildings = page.locator('main .bg-slate-700.rounded.p-3')
+    const buildings = page.locator('main .bg-slate-800.rounded-lg').nth(0).locator('.bg-slate-700.rounded.p-3')
     const count = await buildings.count()
     
     if (count === 0) {
@@ -102,60 +104,81 @@ test.describe('Production', () => {
   })
 
   test('should show building after construction', async ({ page }) => {
-    await page.click('button:has-text("+ 新建林场")')
+    const buildingButton = page.locator('text=+ 新建林场')
+    await expect(buildingButton).toBeEnabled()
+    await buildingButton.click()
     
-    const buildings = page.locator('main .bg-slate-700.rounded.p-3')
+    const buildings = page.locator('main .bg-slate-800.rounded-lg').nth(0).locator('.bg-slate-700.rounded.p-3')
     await expect(buildings.first()).toBeVisible()
   })
 
   test('should show building efficiency', async ({ page }) => {
-    await page.click('button:has-text("+ 新建林场")')
+    const buildingButton = page.locator('text=+ 新建林场')
+    await expect(buildingButton).toBeEnabled()
+    await buildingButton.click()
     
-    await expect(page.locator('main').getByText(/效率:/).first()).toBeVisible()
+    const buildings = page.locator('main .bg-slate-800.rounded-lg').nth(0).locator('.bg-slate-700.rounded.p-3')
+    await expect(buildings.getByText(/效率:/)).toBeVisible()
   })
 
   test('should show building count badge', async ({ page }) => {
-    await page.click('button:has-text("+ 新建林场")')
+    const buildingButton = page.locator('text=+ 新建林场')
+    await expect(buildingButton).toBeEnabled()
+    await buildingButton.click()
     
-    const countBadge = page.locator('main .bg-blue-600.rounded-full').first()
-    await expect(countBadge).toBeVisible()
+    const countBadge = page.locator('main .bg-slate-800.rounded-lg').nth(0).locator('.bg-blue-600.rounded-full')
+    await expect(countBadge.first()).toBeVisible()
   })
 
   test('should stack same building types', async ({ page }) => {
-    await page.click('button:has-text("+ 新建林场")')
-    await expect(page.locator('main .bg-slate-700.rounded.p-3').first()).toBeVisible()
+    const buildingButton = page.locator('text=+ 新建林场')
+    await expect(buildingButton).toBeEnabled()
+    await buildingButton.click()
     
-    const afterFirstBuild = await page.locator('main .bg-slate-700.rounded.p-3').count()
+    const buildings = page.locator('main .bg-slate-800.rounded-lg').nth(0).locator('.bg-slate-700.rounded.p-3')
+    await expect(buildings.first()).toBeVisible()
+    
+    const afterFirstBuild = await buildings.count()
     expect(afterFirstBuild).toBe(1)
     
-    await page.click('button:has-text("+ 新建林场")')
+    await buildingButton.click()
     
-    const forestryCard = page.locator('main .bg-slate-700.rounded.p-3').filter({ hasText: '林场' })
+    const forestryCard = buildings.filter({ hasText: '林场' })
     const countBadge = forestryCard.locator('.bg-blue-600.rounded-full')
     await expect(countBadge).toHaveText('x2')
   })
 
   test('should add new building type as separate card', async ({ page }) => {
-    await page.click('button:has-text("+ 新建林场")')
-    await expect(page.locator('main .bg-slate-700.rounded.p-3').first()).toBeVisible()
+    const forestryButton = page.locator('text=+ 新建林场')
+    await expect(forestryButton).toBeEnabled()
+    await forestryButton.click()
     
-    const initialCount = await page.locator('main .bg-slate-700.rounded.p-3').count()
+    const buildings = page.locator('main .bg-slate-800.rounded-lg').nth(0).locator('.bg-slate-700.rounded.p-3')
+    await expect(buildings.first()).toBeVisible()
     
-    await page.click('button:has-text("+ 新建牧场")')
-    await expect(page.locator('main .bg-slate-700.rounded.p-3').filter({ hasText: '牧场' })).toBeVisible()
+    const initialCount = await buildings.count()
     
-    const finalCount = await page.locator('main .bg-slate-700.rounded.p-3').count()
+    const ranchButton = page.locator('text=+ 新建牧场')
+    await expect(ranchButton).toBeEnabled()
+    await ranchButton.click()
+    await expect(buildings.filter({ hasText: '牧场' })).toBeVisible()
+    
+    const finalCount = await buildings.count()
     expect(finalCount).toBe(initialCount + 1)
   })
 
   test('should show scaled production output', async ({ page }) => {
-    await page.click('button:has-text("+ 新建林场")')
+    const buildingButton = page.locator('text=+ 新建林场')
+    await expect(buildingButton).toBeEnabled()
+    await buildingButton.click()
     
     await expect(page.locator('main').getByText(/产量:/).first()).toBeVisible()
   })
 
   test('should show scaled worker capacity', async ({ page }) => {
-    await page.click('button:has-text("+ 新建林场")')
+    const buildingButton = page.locator('text=+ 新建林场')
+    await expect(buildingButton).toBeEnabled()
+    await buildingButton.click()
     
     const workerText = await page.locator('main').getByText(/工人:/).first().textContent()
     expect(workerText).toBeTruthy()

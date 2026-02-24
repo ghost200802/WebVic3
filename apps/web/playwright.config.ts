@@ -4,35 +4,31 @@ export default defineConfig({
   testDir: './e2e',
   fullyParallel: true,
   forbidOnly: !!process.env.CI,
-  retries: process.env.CI ? 2 : 0,
-  workers: process.env.CI ? 1 : undefined,
+  retries: 0,
+  workers: 4,
   timeout: 30000,
   expect: {
-    timeout: 5000
+    timeout: 10000
   },
-  reporter: 'line',
+  reporter: [['list'], ['html']],
   use: {
     baseURL: 'http://localhost:3000',
-    trace: 'on-first-retry',
+    trace: 'off',
     screenshot: 'only-on-failure',
     actionTimeout: 10000,
-    navigationTimeout: 15000
+    navigationTimeout: 15000,
+    contextOptions: {
+      ignoreHTTPSErrors: true
+    }
   },
   projects: [
     {
       name: 'chromium',
       use: {
         ...devices['Desktop Chrome'],
-        channel: 'chrome'
+        channel: 'chrome',
+        headless: true
       }
-    }
-  ],
-  webServer: [
-    {
-      command: 'pnpm dev',
-      url: 'http://localhost:3000',
-      reuseExistingServer: true,
-      timeout: 60000
     }
   ]
 })

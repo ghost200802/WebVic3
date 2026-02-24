@@ -87,6 +87,7 @@ export class SaveSerializer implements ISaveSerializer {
         money: data.resources.money,
         goods: this.deserializeMap(data.resources.goods)
       },
+      globalStorage: this.deserializeMap(data.globalDataStorage || []),
       settings: data.settings,
       notifications: data.notifications || []
     }

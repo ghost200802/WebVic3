@@ -28,6 +28,8 @@ export interface GameState {
     goods: Map<string, number>
   }
   
+  globalStorage: Map<string, number>
+  
   settings: GameSettings
   notifications: Notification[]
 }
@@ -72,6 +74,8 @@ export interface PersistedState {
     goods: Map<string, number>
   }
   
+  globalStorage: Map<string, number>
+  
   settings: GameSettings
 }
 
@@ -95,6 +99,7 @@ export const createInitialState = (): Omit<GameState, 'id' | 'name' | 'version'>
     money: 1000,
     goods: new Map()
   },
+  globalStorage: new Map(),
   settings: {
     gameSpeed: 1,
     autoSaveInterval: 300,
@@ -127,6 +132,7 @@ export const cloneGameState = (state: GameState): GameState => {
       money: state.resources.money,
       goods: new Map(state.resources.goods)
     },
+    globalStorage: new Map(state.globalStorage),
     settings: {
       ...state.settings,
       enabledFeatures: { ...state.settings.enabledFeatures }

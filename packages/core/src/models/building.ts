@@ -28,6 +28,7 @@ export interface BuildingConfig {
   baseThroughput: number
   constructionCost: Record<string, number>
   constructionTime: number
+  area: number
   productionMethods: string[]
 }
 
@@ -42,6 +43,7 @@ export const BUILDING_CONFIGS: Record<string, BuildingConfig> = {
     baseThroughput: 100,
     constructionCost: { wood: 10, stone: 5 },
     constructionTime: 30,
+    area: 50,
     productionMethods: ['slash_burn', 'plowing', 'mechanized', 'modern']
   },
   ranch: {
@@ -54,6 +56,7 @@ export const BUILDING_CONFIGS: Record<string, BuildingConfig> = {
     baseThroughput: 50,
     constructionCost: { wood: 15 },
     constructionTime: 25,
+    area: 40,
     productionMethods: []
   },
   forestry: {
@@ -66,6 +69,7 @@ export const BUILDING_CONFIGS: Record<string, BuildingConfig> = {
     baseThroughput: 80,
     constructionCost: { wood: 5 },
     constructionTime: 20,
+    area: 20,
     productionMethods: []
   },
   fishery: {
@@ -78,6 +82,7 @@ export const BUILDING_CONFIGS: Record<string, BuildingConfig> = {
     baseThroughput: 40,
     constructionCost: { wood: 8 },
     constructionTime: 15,
+    area: 30,
     productionMethods: []
   },
   quarry: {
@@ -90,6 +95,7 @@ export const BUILDING_CONFIGS: Record<string, BuildingConfig> = {
     baseThroughput: 60,
     constructionCost: { wood: 10 },
     constructionTime: 35,
+    area: 45,
     productionMethods: []
   },
   mine: {
@@ -102,6 +108,7 @@ export const BUILDING_CONFIGS: Record<string, BuildingConfig> = {
     baseThroughput: 80,
     constructionCost: { wood: 20, stone: 15 },
     constructionTime: 50,
+    area: 55,
     productionMethods: []
   },
   workshop: {
@@ -114,6 +121,7 @@ export const BUILDING_CONFIGS: Record<string, BuildingConfig> = {
     baseThroughput: 50,
     constructionCost: { wood: 30, stone: 20 },
     constructionTime: 40,
+    area: 25,
     productionMethods: ['handcraft']
   },
   factory: {
@@ -126,6 +134,7 @@ export const BUILDING_CONFIGS: Record<string, BuildingConfig> = {
     baseThroughput: 200,
     constructionCost: { steel: 100, coal: 50 },
     constructionTime: 100,
+    area: 100,
     productionMethods: ['steam_power', 'assembly_line', 'automation']
   },
   modern_factory: {
@@ -138,6 +147,7 @@ export const BUILDING_CONFIGS: Record<string, BuildingConfig> = {
     baseThroughput: 300,
     constructionCost: { steel: 150, oil: 50 },
     constructionTime: 120,
+    area: 80,
     productionMethods: ['smart']
   },
   warehouse: {
@@ -150,6 +160,7 @@ export const BUILDING_CONFIGS: Record<string, BuildingConfig> = {
     baseThroughput: 0,
     constructionCost: { wood: 25, stone: 10 },
     constructionTime: 20,
+    area: 35,
     productionMethods: []
   }
 }

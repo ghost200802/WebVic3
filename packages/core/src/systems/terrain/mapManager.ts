@@ -39,6 +39,7 @@ export class TileManager implements ITileManager {
       usedArea: 0,
       resources: [],
       buildings: [],
+      storage: new Map(),
       isExplored: false,
       isControlled: false,
       controlCost: this.calculateControlCost(terrainConfigs),
