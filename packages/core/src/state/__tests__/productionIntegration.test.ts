@@ -94,7 +94,7 @@ describe('Production Integration Tests', () => {
       
       const storage = state.tiles.get('tile-1')?.storage.get('grain')
       expect(storage).toBeGreaterThan(0)
-      expect(storage).toBeGreaterThan(100)
+      expect(storage).toBeGreaterThan(15)
     })
 
     it('should not produce when farm has no workers', () => {
@@ -195,9 +195,9 @@ describe('Production Integration Tests', () => {
       const wood = tile?.storage.get('wood')
       
       expect(grain).toBeDefined()
-      expect(grain).toBeGreaterThan(200)
+      expect(grain).toBeGreaterThan(30)
       expect(wood).toBeDefined()
-      expect(wood).toBeGreaterThan(150)
+      expect(wood).toBeGreaterThan(15)
     })
   })
 

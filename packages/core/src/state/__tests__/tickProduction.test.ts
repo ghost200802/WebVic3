@@ -1,7 +1,7 @@
 import { rootReducer } from '../reducers'
 import { GameState } from '../../models/gameState'
 import { Era } from '../../models/baseTypes'
-import { tickTime, createBuilding, setWorkers, setProductionMethod } from '../actions'
+import { tickTime, createBuilding, setWorkers } from '../actions'
 import { BuildingType } from '../../models/baseTypes'
 
 describe('tickProduction', () => {

@@ -92,7 +92,7 @@ export class GameStateProvider implements IGameStateProvider {
       throw new Error('GameStateProvider not initialized. Call initialize() first.')
     }
 
-    const { isPaused, timeMultiplier, notifications, researchQueue, ...rest } = this._state
+    const { isPaused: _isPaused, timeMultiplier: _timeMultiplier, notifications: _notifications, researchQueue: _researchQueue, ...rest } = this._state
 
     return {
       id: rest.id,

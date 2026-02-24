@@ -1,4 +1,4 @@
-import { TechnologyManager, TechnologyTree } from '../index'
+import { TechnologyManager } from '../index'
 import { TECHNOLOGIES } from '../../../models'
 
 describe('Technology System', () => {

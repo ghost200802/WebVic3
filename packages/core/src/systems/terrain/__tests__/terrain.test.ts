@@ -75,7 +75,7 @@ describe('Terrain System', () => {
   describe('addBuildingToTile', () => {
     it('should add building to tile', () => {
       const terrainComposition = new Map([[TerrainType.PLAINS, 1.0]])
-      const tile = manager.createTile('tile_1', 'Test Tile', terrainComposition)
+      manager.createTile('tile_1', 'Test Tile', terrainComposition)
       
       manager.addBuildingToTile('tile_1', 'building_1')
       
@@ -86,7 +86,7 @@ describe('Terrain System', () => {
 
     it('should throw error when tile has no space', () => {
       const terrainComposition = new Map([[TerrainType.PLAINS, 0.001]])
-      const tile = manager.createTile('tile_1', 'Test Tile', terrainComposition)
+      manager.createTile('tile_1', 'Test Tile', terrainComposition)
       
       expect(() => {
         manager.addBuildingToTile('tile_1', 'building_1')
@@ -104,7 +104,7 @@ describe('Terrain System', () => {
   describe('removeBuildingFromTile', () => {
     it('should remove building from tile', () => {
       const terrainComposition = new Map([[TerrainType.PLAINS, 1.0]])
-      const tile = manager.createTile('tile_1', 'Test Tile', terrainComposition)
+      manager.createTile('tile_1', 'Test Tile', terrainComposition)
       manager.addBuildingToTile('tile_1', 'building_1')
       
       manager.removeBuildingFromTile('tile_1', 'building_1')
@@ -127,7 +127,7 @@ describe('Terrain System', () => {
   describe('discoverResource', () => {
     it('should discover resource on tile', () => {
       const terrainComposition = new Map([[TerrainType.PLAINS, 1.0]])
-      const tile = manager.createTile('tile_1', 'Test Tile', terrainComposition)
+      manager.createTile('tile_1', 'Test Tile', terrainComposition)
       
       const deposit = manager.discoverResource('tile_1', 'iron')
       
@@ -138,7 +138,7 @@ describe('Terrain System', () => {
 
     it('should return existing resource if already discovered', () => {
       const terrainComposition = new Map([[TerrainType.PLAINS, 1.0]])
-      const tile = manager.createTile('tile_1', 'Test Tile', terrainComposition)
+      manager.createTile('tile_1', 'Test Tile', terrainComposition)
       
       const first = manager.discoverResource('tile_1', 'iron')
       const second = manager.discoverResource('tile_1', 'iron')
@@ -148,7 +148,7 @@ describe('Terrain System', () => {
 
     it('should add resource to tile', () => {
       const terrainComposition = new Map([[TerrainType.PLAINS, 1.0]])
-      const tile = manager.createTile('tile_1', 'Test Tile', terrainComposition)
+      manager.createTile('tile_1', 'Test Tile', terrainComposition)
       
       manager.discoverResource('tile_1', 'iron')
       
@@ -165,7 +165,7 @@ describe('Terrain System', () => {
   describe('upgradeTransport', () => {
     it('should upgrade transport level', () => {
       const terrainComposition = new Map([[TerrainType.PLAINS, 1.0]])
-      const tile = manager.createTile('tile_1', 'Test Tile', terrainComposition)
+      manager.createTile('tile_1', 'Test Tile', terrainComposition)
       
       manager.upgradeTransport('tile_1', 2)
       
@@ -192,7 +192,7 @@ describe('Terrain System', () => {
   describe('calculateDevelopmentExperience', () => {
     it('should add development experience', () => {
       const terrainComposition = new Map([[TerrainType.PLAINS, 1.0]])
-      const tile = manager.createTile('tile_1', 'Test Tile', terrainComposition)
+      manager.createTile('tile_1', 'Test Tile', terrainComposition)
       
       manager.calculateDevelopmentExperience('tile_1', 50)
       
@@ -202,7 +202,7 @@ describe('Terrain System', () => {
 
     it('should increase development level when experience threshold reached', () => {
       const terrainComposition = new Map([[TerrainType.PLAINS, 1.0]])
-      const tile = manager.createTile('tile_1', 'Test Tile', terrainComposition)
+      manager.createTile('tile_1', 'Test Tile', terrainComposition)
       
       manager.calculateDevelopmentExperience('tile_1', 100)
       

@@ -118,7 +118,11 @@ test.describe('Production', () => {
     await buildingButton.click()
     
     const buildings = page.locator('main .bg-slate-800.rounded-lg').nth(0).locator('.bg-slate-700.rounded.p-3')
-    await expect(buildings.getByText(/效率:/)).toBeVisible()
+    await expect(buildings.first()).toBeVisible()
+    await page.waitForTimeout(1000)
+    
+    const efficiencyLabel = buildings.filter({ hasText: /效率:/ })
+    await expect(efficiencyLabel.first()).toBeVisible()
   })
 
   test('should show building count badge', async ({ page }) => {

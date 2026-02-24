@@ -2,6 +2,7 @@ import { GameState } from '../models/gameState'
 import { GameAction, ActionTypes } from './actions'
 import { BUILDING_CONFIGS } from '../models/building'
 import { ProductionCalculator } from '../systems/production/productionCalculator'
+import { StorageManager } from '../systems/storage/storageManager'
 
 export const rootReducer = (state: GameState, action: GameAction): GameState => {
   switch (action.type) {
@@ -504,60 +505,30 @@ const addPopulationReducer = (state: GameState, action: GameAction): GameState =
 
 const addTileStorageReducer = (state: GameState, action: GameAction): GameState => {
   const { tileId, goodsId, amount } = action.payload || {}
-  const tile = state.tiles.get(tileId)
-  
-  if (!tile) return state
-  
-  const currentAmount = tile.storage.get(goodsId) || 0
-  const newAmount = Math.max(0, currentAmount + amount)
-  
-  return {
-    ...state,
-    tiles: new Map(state.tiles).set(tileId, {
-      ...tile,
-      storage: new Map(tile.storage).set(goodsId, newAmount)
-    })
-  }
+  const storageManager = new StorageManager(state)
+  storageManager.addGoodsToTile(tileId, goodsId, amount)
+  return { ...state }
 }
 
 const removeTileStorageReducer = (state: GameState, action: GameAction): GameState => {
   const { tileId, goodsId, amount } = action.payload || {}
-  const tile = state.tiles.get(tileId)
-  
-  if (!tile) return state
-  
-  const currentAmount = tile.storage.get(goodsId) || 0
-  const newAmount = Math.max(0, currentAmount - amount)
-  
-  return {
-    ...state,
-    tiles: new Map(state.tiles).set(tileId, {
-      ...tile,
-      storage: new Map(tile.storage).set(goodsId, newAmount)
-    })
-  }
+  const storageManager = new StorageManager(state)
+  storageManager.removeGoodsFromTile(tileId, goodsId, amount)
+  return { ...state }
 }
 
 const addGlobalStorageReducer = (state: GameState, action: GameAction): GameState => {
   const { goodsId, amount } = action.payload || {}
-  const currentAmount = state.globalStorage.get(goodsId) || 0
-  const newAmount = Math.max(0, currentAmount + amount)
-  
-  return {
-    ...state,
-    globalStorage: new Map(state.globalStorage).set(goodsId, newAmount)
-  }
+  const storageManager = new StorageManager(state)
+  storageManager.addGoodsToGlobal(goodsId, amount)
+  return { ...state }
 }
 
 const removeGlobalStorageReducer = (state: GameState, action: GameAction): GameState => {
   const { goodsId, amount } = action.payload || {}
-  const currentAmount = state.globalStorage.get(goodsId) || 0
-  const newAmount = Math.max(0, currentAmount - amount)
-  
-  return {
-    ...state,
-    globalStorage: new Map(state.globalStorage).set(goodsId, newAmount)
-  }
+  const storageManager = new StorageManager(state)
+  storageManager.removeGoodsFromGlobal(goodsId, amount)
+  return { ...state }
 }
 
 export const batchActions = (state: GameState, actions: GameAction[]): GameState => {

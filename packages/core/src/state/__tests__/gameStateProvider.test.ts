@@ -1,5 +1,5 @@
-import { GameStateProvider, IGameStateProvider, StateListener, createGameStateProvider } from '../gameStateProvider'
-import { GameState, createInitialState } from '../../models/gameState'
+import { IGameStateProvider, createGameStateProvider } from '../gameStateProvider'
+import { GameState } from '../../models/gameState'
 import { Era } from '../../models/baseTypes'
 import { tickTime, setPause, setResume, setTimeMultiplier, createBuilding, upgradeBuilding, removeBuilding, addNotification, removeNotification } from '../actions'
 import { BuildingType } from '../../models/baseTypes'
