@@ -125,7 +125,9 @@ const removeAlert = (id: string) => {
 }
 
 onMounted(() => {
-  gameStore.initializeGame()
+  if (!gameStore.gameState) {
+    gameStore.initializeGame()
+  }
   gameStore.startTicking()
 })
 </script>

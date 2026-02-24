@@ -423,6 +423,15 @@ export const useGameStore = defineStore('game', {
       } else {
         this.addAlert('error', '出售失败', '库存不足')
       }
+    },
+
+    $reset() {
+      this.gameState = null
+      this.isPaused = false
+      this.alerts = []
+      this.tickInterval = null
+      this.buildings = []
+      this.populations = []
     }
   }
 })

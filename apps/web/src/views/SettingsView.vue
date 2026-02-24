@@ -98,13 +98,19 @@
           >
             导出存档
           </button>
+          <button
+            @click="resetGame"
+            class="w-full bg-red-600 hover:bg-red-700 text-white py-2 px-4 rounded-lg transition-colors"
+          >
+            重置游戏
+          </button>
         </div>
       </div>
 
       <div class="flex space-x-4">
         <button
           @click="resetSettings"
-          class="bg-red-600 hover:bg-red-700 text-white py-2 px-6 rounded-lg transition-colors"
+          class="bg-slate-600 hover:bg-slate-700 text-white py-2 px-6 rounded-lg transition-colors"
         >
           重置所有设置
         </button>
@@ -217,5 +223,22 @@ const exportGame = () => {
   URL.revokeObjectURL(url)
   
   gameStore.addAlert('success', '游戏已导出', '存档已下载')
+}
+
+const resetGame = () => {
+  if (confirm('确定要重置游戏吗？\n\n此操作将清空所有游戏进度，包括：\n- 建筑和人口\n- 资源和科技\n- 存档数据\n\n此操作不可恢复！')) {
+    if (confirm('再次确认：真的要重置游戏吗？')) {
+      localStorage.removeItem('webvic3_save')
+      gameStore.$reset()
+      settingsStore.resetSettings()
+      Object.assign(settings, settingsStore.$state)
+      
+      gameStore.addAlert('info', '游戏已重置', '所有游戏数据已清空')
+      
+      setTimeout(() => {
+        window.location.href = '/'
+      }, 1000)
+    }
+  }
 }
 </script>
