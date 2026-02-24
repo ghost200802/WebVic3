@@ -58,14 +58,12 @@ test.describe('Authentication', () => {
     await expect(page).toHaveURL('/production')
     
     await page.click('button:has-text("+ 新建林场")')
-    await page.waitForTimeout(500)
     
     const forestryCard = page.locator('main .bg-slate-700.rounded.p-3').filter({ hasText: '林场' })
     await expect(forestryCard).toBeVisible()
     
     const countBadge = forestryCard.locator('.bg-blue-600.rounded-full')
-    const badgeText = await countBadge.textContent()
-    expect(badgeText).toBe('x1')
+    await expect(countBadge).toHaveText('x1')
   })
 
   test('should buy goods in market', async ({ page }) => {
@@ -75,7 +73,5 @@ test.describe('Authentication', () => {
     await page.selectOption('main select', 'food')
     await page.fill('main input[type="number"]', '10')
     await page.click('main button:has-text("买入")')
-    
-    await page.waitForTimeout(500)
   })
 })

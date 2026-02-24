@@ -10,7 +10,7 @@ export default defineConfig({
   expect: {
     timeout: 5000
   },
-  reporter: [['list'], ['html', { open: 'never' }]],
+  reporter: 'line',
   use: {
     baseURL: 'http://localhost:3000',
     trace: 'on-first-retry',
