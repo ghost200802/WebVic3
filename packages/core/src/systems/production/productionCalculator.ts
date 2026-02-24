@@ -4,7 +4,6 @@ import { ProductionResult } from './buildingManager'
 export interface IProductionCalculator {
   calculateProduction(
     building: Building,
-    workers: number,
     era: Era,
     educationLevel: number,
     toolAvailability: number
@@ -38,7 +37,6 @@ export class ProductionCalculator implements IProductionCalculator {
 
   calculateProduction(
     building: Building,
-    workers: number,
     era: Era,
     educationLevel: number,
     toolAvailability: number
@@ -58,7 +56,7 @@ export class ProductionCalculator implements IProductionCalculator {
     const educationBonus = this.EDUCATION_BONUS[Math.min(educationLevel, 6)]
     const efficiency = eraBonus * educationBonus * toolAvailability * method.workerEfficiency
 
-    const throughput = building.baseThroughput * efficiency * (workers / building.baseWorkers)
+    const throughput = building.baseThroughput * efficiency * (building.currentWorkers / building.baseWorkers)
     const levelBonus = 1 + (building.level - 1) * 0.1
 
     const adjustedThroughput = throughput * levelBonus

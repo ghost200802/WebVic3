@@ -20,6 +20,12 @@ describe('Production System', () => {
         expect(building.name).toBe('林场')
       })
 
+      it('should initialize currentWorkers to 0', () => {
+        const building = manager.createBuilding('forestry', 'tile_1')
+        
+        expect(building.currentWorkers).toBe(0)
+      })
+
       it('should throw error for invalid building type', () => {
         expect(() => {
           manager.createBuilding('invalid_type', 'tile_1')
@@ -127,6 +133,7 @@ describe('Production System', () => {
           level: 1,
           productionMethods: ['slash_burn'],
           baseWorkers: 10,
+          currentWorkers: 10,
           baseThroughput: 100,
           efficiency: 1.0,
           constructionCost: { wood: 10, stone: 5 }
@@ -134,7 +141,6 @@ describe('Production System', () => {
 
         const result = calculator.calculateProduction(
           building,
-          10,
           Era.STONE_AGE,
           2,
           1.0
@@ -153,6 +159,7 @@ describe('Production System', () => {
           level: 1,
           productionMethods: ['slash_burn'],
           baseWorkers: 10,
+          currentWorkers: 10,
           baseThroughput: 100,
           efficiency: 1.0,
           constructionCost: { wood: 10, stone: 5 }
@@ -160,7 +167,6 @@ describe('Production System', () => {
 
         const stoneAgeResult = calculator.calculateProduction(
           building,
-          10,
           Era.STONE_AGE,
           2,
           1.0
@@ -168,7 +174,6 @@ describe('Production System', () => {
 
         const industrialResult = calculator.calculateProduction(
           building,
-          10,
           Era.INDUSTRIAL,
           2,
           1.0
@@ -184,6 +189,7 @@ describe('Production System', () => {
           level: 1,
           productionMethods: ['slash_burn'],
           baseWorkers: 10,
+          currentWorkers: 10,
           baseThroughput: 100,
           efficiency: 1.0,
           constructionCost: { wood: 10, stone: 5 }
@@ -191,7 +197,6 @@ describe('Production System', () => {
 
         const lowEducationResult = calculator.calculateProduction(
           building,
-          10,
           Era.STONE_AGE,
           0,
           1.0
@@ -199,7 +204,6 @@ describe('Production System', () => {
 
         const highEducationResult = calculator.calculateProduction(
           building,
-          10,
           Era.STONE_AGE,
           2,
           1.0

@@ -19,6 +19,8 @@ export const rootReducer = (state: GameState, action: GameAction): GameState => 
       return removeBuildingReducer(state, action)
     case ActionTypes.SET_PRODUCTION_METHOD:
       return setProductionMethodReducer(state, action)
+    case ActionTypes.SET_WORKERS:
+      return setWorkersReducer(state, action)
     case ActionTypes.ASSIGN_WORKER:
       return assignWorkerReducer(state, action)
     case ActionTypes.REMOVE_WORKER:
@@ -107,6 +109,7 @@ const createBuildingReducer = (state: GameState, action: GameAction): GameState 
     constructionTime: config.constructionTime,
     baseWorkers: config.baseWorkers,
     maxWorkers: config.maxWorkers,
+    currentWorkers: 0,
     baseThroughput: config.baseThroughput,
     productionMethods: [...config.productionMethods],
     level: 1,
@@ -158,6 +161,21 @@ const setProductionMethodReducer = (state: GameState, action: GameAction): GameS
     buildings: new Map(state.buildings).set(buildingId, {
       ...building,
       productionMethods: [methodId]
+    })
+  }
+}
+
+const setWorkersReducer = (state: GameState, action: GameAction): GameState => {
+  const { buildingId, workers } = action.payload || {}
+  const building = state.buildings.get(buildingId)
+  
+  if (!building) return state
+  
+  return {
+    ...state,
+    buildings: new Map(state.buildings).set(buildingId, {
+      ...building,
+      currentWorkers: Math.max(0, Math.min(workers, building.maxWorkers))
     })
   }
 }

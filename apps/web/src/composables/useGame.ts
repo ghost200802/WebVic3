@@ -1,6 +1,6 @@
 import { ref, computed, onUnmounted, type Ref } from 'vue'
 import { getGameStateProvider, initializeGame, getExtendedBuildings, getExtendedPopulations, getBuildingName, type GameAlert, type ExtendedBuilding, type ExtendedPopulation } from '../state/gameState'
-import { setPause, setResume, tickTime, addNotification, createBuilding as createBuildingAction, setResourceMoney, setGoodsQuantity } from '@webvic3/core'
+import { setPause, setResume, tickTime, addNotification, createBuilding as createBuildingAction, setProductionMethod, setWorkers, setResourceMoney, setGoodsQuantity } from '@webvic3/core'
 import type { GameState, BuildingType, GameDate, Era } from '@webvic3/core'
 
 const provider = getGameStateProvider()
@@ -122,6 +122,29 @@ export function useGame() {
     addAlert('success', '建筑完成', `已建造新的${getBuildingName(type)}`)
   }
 
+  const updateBuildingWorkers = (buildingType: BuildingType, totalWorkers: number) => {
+    const buildingsByType = Array.from(state.value?.buildings.values() || [])
+      .filter(b => b.type === buildingType)
+    
+    if (buildingsByType.length === 0) return
+    
+    const maxTotalWorkers = buildingsByType.reduce((sum, b) => sum + b.maxWorkers, 0)
+    const clampedWorkers = Math.max(0, Math.min(totalWorkers, maxTotalWorkers))
+    
+    const workersPerBuilding = Math.floor(clampedWorkers / buildingsByType.length)
+    const remainder = clampedWorkers % buildingsByType.length
+    
+    buildingsByType.forEach((building, index) => {
+      const workers = workersPerBuilding + (index < remainder ? 1 : 0)
+      provider.dispatch(setWorkers(building.id, workers))
+    })
+  }
+
+  const updateProductionMethod = (buildingId: string, methodId: string) => {
+    provider.dispatch(setProductionMethod(buildingId, methodId))
+    addAlert('success', '生产方式已更新', '生产方式已成功更新')
+  }
+
   const purchaseGood = (goodId: string, amount: number) => {
     const prices: Record<string, number> = {
       food: 10,
@@ -189,6 +212,8 @@ export function useGame() {
     addAlert,
     removeAlert,
     createBuilding,
+    updateBuildingWorkers,
+    updateProductionMethod,
     purchaseGood,
     sellGood,
     reset

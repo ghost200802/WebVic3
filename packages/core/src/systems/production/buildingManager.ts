@@ -40,6 +40,7 @@ export class BuildingManager implements IBuildingManager {
       constructionTime: config.constructionTime,
       baseWorkers: config.baseWorkers,
       maxWorkers: config.maxWorkers,
+      currentWorkers: 0,
       baseThroughput: config.baseThroughput,
       productionMethods: [...config.productionMethods],
       level: 1,

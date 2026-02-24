@@ -38,6 +38,11 @@ export interface SetProductionMethodPayload {
   methodId: string
 }
 
+export interface SetWorkersPayload {
+  buildingId: string
+  workers: number
+}
+
 export interface AssignWorkerPayload {
   populationId: string
   buildingId: string
@@ -148,6 +153,7 @@ export const ActionTypes = {
   UPGRADE_BUILDING: 'UPGRADE_BUILDING',
   REMOVE_BUILDING: 'REMOVE_BUILDING',
   SET_PRODUCTION_METHOD: 'SET_PRODUCTION_METHOD',
+  SET_WORKERS: 'SET_WORKERS',
   ASSIGN_WORKER: 'ASSIGN_WORKER',
   REMOVE_WORKER: 'REMOVE_WORKER',
   UPDATE_POPULATION: 'UPDATE_POPULATION',
@@ -195,6 +201,9 @@ export const removeBuilding = (buildingId: string): GameAction =>
 
 export const setProductionMethod = (buildingId: string, methodId: string): GameAction =>
   createGameAction(ActionTypes.SET_PRODUCTION_METHOD, { buildingId, methodId } as SetProductionMethodPayload)
+
+export const setWorkers = (buildingId: string, workers: number): GameAction =>
+  createGameAction(ActionTypes.SET_WORKERS, { buildingId, workers } as SetWorkersPayload)
 
 export const assignWorker = (populationId: string, buildingId: string, groupId: string): GameAction =>
   createGameAction(ActionTypes.ASSIGN_WORKER, { populationId, buildingId, groupId } as AssignWorkerPayload)

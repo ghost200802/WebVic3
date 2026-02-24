@@ -1,7 +1,7 @@
 import { rootReducer, batchActions } from '../reducers'
 import { GameState } from '../../models/gameState'
 import { Era } from '../../models/baseTypes'
-import { tickTime, setPause, setResume, setTimeMultiplier, createBuilding, upgradeBuilding, removeBuilding, setProductionMethod, assignWorker, removeWorker, updatePopulation, addSupply, addDemand, executeTransaction, addTechToQueue, removeTechFromQueue, unlockTech, addNotification, removeNotification } from '../actions'
+import { tickTime, setPause, setResume, setTimeMultiplier, createBuilding, upgradeBuilding, removeBuilding, setProductionMethod, setWorkers, assignWorker, removeWorker, updatePopulation, addSupply, addDemand, executeTransaction, addTechToQueue, removeTechFromQueue, unlockTech, addNotification, removeNotification } from '../actions'
 import { BuildingType } from '../../models/baseTypes'
 
 describe('Reducers', () => {
@@ -18,7 +18,7 @@ describe('Reducers', () => {
       isPaused: false,
       timeMultiplier: 1,
       tiles: new Map([['tile-1', { id: 'tile-1', type: 'plains' as any, coordinates: { x: 0, y: 0 } }]]),
-      buildings: new Map([['building-1', { id: 'building-1', name: 'Farm', type: BuildingType.FARM, minEra: Era.STONE_AGE, constructionCost: {}, constructionTime: 30, baseWorkers: 10, maxWorkers: 20, baseThroughput: 100, productionMethods: [], level: 1, experience: 0, tileId: 'tile-1' }]]),
+      buildings: new Map([['building-1', { id: 'building-1', name: 'Farm', type: BuildingType.FARM, minEra: Era.STONE_AGE, constructionCost: {}, constructionTime: 30, baseWorkers: 10, maxWorkers: 20, currentWorkers: 0, baseThroughput: 100, productionMethods: [], level: 1, experience: 0, tileId: 'tile-1' }]]),
       populations: new Map([['pop-1', { id: 'pop-1', tileId: 'tile-1', totalPopulation: 100, groups: [{ id: 'group-1', size: 50, ageGroup: 'adult' as any, education: 'basic' as any, socialClass: 'worker' as any, employment: 'employed' as any, workplace: 'building-1', profession: 'farmer', wage: 10, wealth: 100, livingStandard: 50, needs: { survival: 100, basic: 80, improved: 50, luxury: 20 } }], ageDistribution: { children: 30, adults: 60, elders: 10 }, educationDistribution: {} as any, classDistribution: {} as any, employment: { total: 100, employed: 50, unemployed: 50, retired: 0 }, averageWage: 10, averageLivingStandard: 50, birthRate: 0.02, deathRate: 0.01, netMigration: 0 }]]),
       markets: new Map([['market-1', { id: 'market-1', name: 'Market 1', regions: ['region-1'], prices: new Map([['wood', { basePrice: 10, currentPrice: 10, previousPrice: 10, history: [] }]]), supply: new Map([['wood', 100]]), demand: new Map([['wood', 50]]), stockpile: new Map(), events: [] }]]),
       technologies: new Set(['tech-1']),
@@ -167,6 +167,39 @@ describe('Reducers', () => {
       
       const building = newState.buildings.get('building-1')
       expect(building?.productionMethods).toEqual([])
+    })
+  })
+
+  describe('setWorkersReducer', () => {
+    it('should set workers for building', () => {
+      const action = setWorkers('building-1', 10)
+      const newState = rootReducer(initialState, action)
+      
+      const building = newState.buildings.get('building-1')
+      expect(building?.currentWorkers).toBe(10)
+    })
+
+    it('should not exceed max workers', () => {
+      const action = setWorkers('building-1', 50)
+      const newState = rootReducer(initialState, action)
+      
+      const building = newState.buildings.get('building-1')
+      expect(building?.currentWorkers).toBe(20)
+    })
+
+    it('should not be negative', () => {
+      const action = setWorkers('building-1', -5)
+      const newState = rootReducer(initialState, action)
+      
+      const building = newState.buildings.get('building-1')
+      expect(building?.currentWorkers).toBe(0)
+    })
+
+    it('should not modify non-existent building', () => {
+      const action = setWorkers('non-existent', 10)
+      const newState = rootReducer(initialState, action)
+      
+      expect(newState.buildings.size).toBe(1)
     })
   })
 

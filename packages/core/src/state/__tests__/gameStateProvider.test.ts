@@ -45,7 +45,8 @@ describe('GameStateProvider', () => {
       },
       notifications: []
     }
-    provider = createGameStateProvider(initialState)
+    provider = createGameStateProvider()
+    provider.initialize(initialState)
   })
 
   describe('getState', () => {

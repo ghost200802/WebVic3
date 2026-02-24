@@ -289,9 +289,9 @@ export const getExtendedBuildings = (state: GameState): ExtendedBuilding[] => {
     const existing = buildingCounts.get(building.type)
     if (existing) {
       existing.count++
-      existing.workers += building.baseWorkers
+      existing.workers += building.currentWorkers
     } else {
-      buildingCounts.set(building.type, { count: 1, workers: building.baseWorkers })
+      buildingCounts.set(building.type, { count: 1, workers: building.currentWorkers })
     }
   }
 

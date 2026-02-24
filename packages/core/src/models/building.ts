@@ -10,6 +10,7 @@ export interface Building {
   constructionTime: number
   baseWorkers: number
   maxWorkers: number
+  currentWorkers: number
   baseThroughput: number
   productionMethods: string[]
   level: number
