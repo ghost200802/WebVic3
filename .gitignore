@@ -36,6 +36,11 @@ Thumbs.db
 coverage
 *.lcov
 
+# Playwright
+playwright-report/
+test-results/
+playwright/.cache/
+
 # Environment files
 .env
 .env.local
