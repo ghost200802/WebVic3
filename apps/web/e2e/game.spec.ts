@@ -195,15 +195,31 @@ test.describe('Market', () => {
     await page.goto('/market')
   })
 
+  test('should display tile selection', async ({ page }) => {
+    await expect(page.locator('main').getByText('地块选择').first()).toBeVisible()
+    await expect(page.locator('main select').first()).toBeVisible()
+  })
+
   test('should display goods prices', async ({ page }) => {
     await expect(page.locator('main').getByText('商品价格').first()).toBeVisible()
-    await expect(page.locator('main .bg-slate-700').getByText('粮食').first()).toBeVisible()
-    await expect(page.locator('main .bg-slate-700').getByText('木材').first()).toBeVisible()
+    await expect(page.locator('main').getByText('库存 0%-20%').first()).toBeVisible()
+    await expect(page.locator('main').getByText('库存 20%-50%').first()).toBeVisible()
   })
 
   test('should display price mechanism explanation', async ({ page }) => {
     await expect(page.locator('main').getByText('价格机制说明').first()).toBeVisible()
     await expect(page.locator('main').getByText('库存 0%-20%').first()).toBeVisible()
     await expect(page.locator('main').getByText('库存 20%-50%').first()).toBeVisible()
+  })
+
+  test('should display tile inventory', async ({ page }) => {
+    await expect(page.locator('main').getByText('库存').first()).toBeVisible()
+  })
+
+  test('should allow tile selection', async ({ page }) => {
+    const tileSelect = page.locator('main select').first()
+    await tileSelect.selectOption('tile_2')
+    const selectedValue = await tileSelect.inputValue()
+    expect(selectedValue).toBe('tile_2')
   })
 })

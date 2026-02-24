@@ -1,15 +1,36 @@
 <template>
   <div class="p-6">
     <h1 class="text-2xl font-bold text-white mb-6">
-      价格系统
+      市场
     </h1>
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      <div class="bg-slate-800 rounded-lg p-4">
+        <h2 class="text-lg font-bold text-white mb-4">
+          地块选择
+        </h2>
+        <p class="text-slate-400 text-sm mb-4">
+          选择地块以查看该地块的商品价格。
+        </p>
+        <select
+          v-model="selectedTileId"
+          class="w-full bg-slate-600 text-white text-sm rounded px-3 py-2 border border-slate-500 focus:border-blue-500 focus:outline-none"
+        >
+          <option
+            v-for="tile in tiles"
+            :key="tile.id"
+            :value="tile.id"
+          >
+            {{ tile.name }}
+          </option>
+        </select>
+      </div>
+
       <div class="bg-slate-800 rounded-lg p-4">
         <h2 class="text-lg font-bold text-white mb-4">
           商品价格
         </h2>
         <p class="text-slate-400 text-sm mb-4">
-          价格根据各地块库存动态调整。库存越低，价格越高。
+          价格根据{{ selectedTile?.name }}库存动态调整。库存越低，价格越高。
         </p>
         <div class="space-y-2">
           <div
@@ -51,20 +72,61 @@
           </p>
         </div>
       </div>
+
+      <div class="bg-slate-800 rounded-lg p-4">
+        <h2 class="text-lg font-bold text-white mb-4">
+          {{ selectedTile?.name }}库存
+        </h2>
+        <div class="space-y-2">
+          <div
+            v-for="(amount, goodsId) in selectedTileStorage"
+            :key="goodsId"
+            class="flex justify-between items-center text-sm"
+          >
+            <span class="text-slate-300">{{ getGoodsName(goodsId) }}</span>
+            <span class="text-white font-medium">{{ amount }}</span>
+          </div>
+          <div
+            v-if="Object.keys(selectedTileStorage).length === 0"
+            class="text-slate-400 text-center py-4"
+          >
+            空仓
+          </div>
+        </div>
+      </div>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted } from 'vue'
+import { ref, computed } from 'vue'
 import { useGame } from '../composables/useGame'
 import { GOODS_CONFIG } from '@webvic3/core'
 
 const game = useGame()
+const selectedTileId = ref('tile_1')
+
+const tiles = computed(() => {
+  return Array.from(game.state.value?.tiles.values() || [])
+})
+
+const selectedTile = computed(() => {
+  return tiles.value.find(t => t.id === selectedTileId.value)
+})
+
+const selectedTileStorage = computed(() => {
+  const storage: Record<string, number> = {}
+  if (selectedTile.value?.storage) {
+    selectedTile.value.storage.forEach((value, key) => {
+      storage[key] = value
+    })
+  }
+  return storage
+})
 
 const goods = computed(() => {
   const state = game.state.value
-  if (!state) {
+  if (!state || !selectedTile.value) {
     return Object.entries(GOODS_CONFIG).map(([id, config]) => ({
       id,
       name: config.name,
@@ -75,11 +137,11 @@ const goods = computed(() => {
     }))
   }
 
-  const globalStorage = state.globalStorage
+  const tileStorage = selectedTile.value.storage
   const defaultCapacity = 1000
 
   return Object.entries(GOODS_CONFIG).map(([id, config]) => {
-    const inventory = globalStorage.get(id) || 0
+    const inventory = tileStorage.get(id) || 0
     const ratio = Math.min(1, Math.max(0, inventory / defaultCapacity))
     let multiplier = 1
 
@@ -103,4 +165,25 @@ const goods = computed(() => {
     }
   })
 })
+
+const getGoodsName = (goodsId: string) => {
+  const names: Record<string, string> = {
+    'food': '食物',
+    'wood': '木材',
+    'stone': '石料',
+    'iron': '铁矿',
+    'steel': '钢材',
+    'coal': '煤炭',
+    'wheat': '小麦',
+    'livestock': '牲畜',
+    'fish': '鱼类',
+    'cloth': '布匹',
+    'tools': '工具',
+    'gold': '黄金',
+    'gems': '宝石',
+    'oil': '石油',
+    'rubber': '橡胶'
+  }
+  return names[goodsId] || goodsId
+}
 </script>

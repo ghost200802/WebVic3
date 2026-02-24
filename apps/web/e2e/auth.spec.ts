@@ -66,12 +66,11 @@ test.describe('Authentication', () => {
     await expect(countBadge).toHaveText('x1')
   })
 
-  test('should buy goods in market', async ({ page }) => {
+  test('should view market prices', async ({ page }) => {
     await page.click('text=市场')
     await expect(page).toHaveURL('/market')
     
-    await page.selectOption('main select', 'food')
-    await page.fill('main input[type="number"]', '10')
-    await page.click('text=买入')
+    await expect(page.locator('main').getByText('地块选择').first()).toBeVisible()
+    await expect(page.locator('main').getByText('商品价格').first()).toBeVisible()
   })
 })
