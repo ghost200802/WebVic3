@@ -1,81 +1,78 @@
+import { GameDate } from '../../models'
 
+export interface PriceHistoryEntry {
+  date: GameDate
+  price: number
+  inventory: number
+  capacity: number
+  ratio: number
+}
 
 export interface IPriceCalculator {
   calculatePrice(
     basePrice: number,
-    supply: number,
-    demand: number,
-    stockpile: number
+    inventory: number,
+    capacity: number
   ): number
-  calculatePriceAdjustment(
-    currentPrice: number,
-    basePrice: number,
-    supply: number,
-    demand: number
-  ): number
+  calculatePriceMultiplier(inventory: number, capacity: number): number
+  getInventoryRatio(inventory: number, capacity: number): number
 }
 
 export class PriceCalculator implements IPriceCalculator {
-  private readonly SUPPLY_IMPACT = 0.5
-  private readonly DEMAND_IMPACT = 0.5
-  private readonly STOCKPILE_IMPACT = 0.1
-  private readonly SMOOTHING_FACTOR = 0.2
+  private static readonly RATIO_20 = 0.2
+  private static readonly RATIO_50 = 0.5
+  private static readonly RATIO_80 = 0.8
 
   calculatePrice(
     basePrice: number,
-    supply: number,
-    demand: number,
-    stockpile: number
+    inventory: number,
+    capacity: number
   ): number {
-    const supplyImpact = this.calculateSupplyImpact(supply)
-    const demandImpact = this.calculateDemandImpact(demand)
-    const stockpileImpact = this.calculateStockpileImpact(stockpile)
-
-    const priceModifier = 1 + supplyImpact + demandImpact + stockpileImpact
-    let newPrice = basePrice * priceModifier
-
-    newPrice = Math.max(newPrice, basePrice * 0.1)
-    newPrice = Math.min(newPrice, basePrice * 10)
-
-    return newPrice
+    const multiplier = this.calculatePriceMultiplier(inventory, capacity)
+    return basePrice * multiplier
   }
 
-  calculatePriceAdjustment(
-    currentPrice: number,
-    basePrice: number,
-    supply: number,
-    demand: number
-  ): number {
-    const ratio = currentPrice / basePrice
-    const expectedRatio = this.calculateExpectedRatio(supply, demand)
-    const adjustment = (expectedRatio - ratio) * this.SMOOTHING_FACTOR
+  calculatePriceMultiplier(inventory: number, capacity: number): number {
+    if (capacity <= 0) {
+      return 1.0
+    }
 
-    return adjustment
+    const ratio = this.getInventoryRatio(inventory, capacity)
+
+    if (ratio <= PriceCalculator.RATIO_20) {
+      return this.calculateLowInventoryMultiplier(ratio)
+    } else if (ratio <= PriceCalculator.RATIO_50) {
+      return this.calculateMediumLowInventoryMultiplier(ratio)
+    } else if (ratio <= PriceCalculator.RATIO_80) {
+      return this.calculateMediumHighInventoryMultiplier(ratio)
+    } else {
+      return this.calculateHighInventoryMultiplier(ratio)
+    }
   }
 
-  private calculateSupplyImpact(supply: number): number {
-    if (supply <= 0) return 1.0
-    return -this.SUPPLY_IMPACT * Math.log10(supply + 1) * 0.5
+  getInventoryRatio(inventory: number, capacity: number): number {
+    if (capacity <= 0) {
+      return 0
+    }
+    return Math.min(1, Math.max(0, inventory / capacity))
   }
 
-  private calculateDemandImpact(demand: number): number {
-    if (demand <= 0) return -1.0
-    return this.DEMAND_IMPACT * Math.log10(demand + 1) * 0.5
+  private calculateLowInventoryMultiplier(ratio: number): number {
+    if (ratio <= 0) {
+      return 5.0
+    }
+    return 1.5 + (0.2 - ratio) / 0.2 * 3.5
   }
 
-  private calculateStockpileImpact(stockpile: number): number {
-    if (stockpile <= 0) return 0
-    return -this.STOCKPILE_IMPACT * Math.tanh(stockpile / 100)
+  private calculateMediumLowInventoryMultiplier(ratio: number): number {
+    return 1 + (0.5 - ratio) / 0.3 * 0.5
   }
 
-  private calculateExpectedRatio(supply: number, demand: number): number {
-    if (supply <= 0) return 10
-    if (demand <= 0) return 0.1
+  private calculateMediumHighInventoryMultiplier(ratio: number): number {
+    return 1 - (ratio - 0.5) / 0.3 * 0.33
+  }
 
-    const balance = demand / supply
-    if (balance > 2) return 2
-    if (balance < 0.5) return 0.5
-
-    return balance
+  private calculateHighInventoryMultiplier(ratio: number): number {
+    return 0.67 - (ratio - 0.8) / 0.2 * 0.47
   }
 }

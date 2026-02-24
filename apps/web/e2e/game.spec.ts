@@ -201,9 +201,9 @@ test.describe('Market', () => {
     await expect(page.locator('main .bg-slate-700').getByText('木材').first()).toBeVisible()
   })
 
-  test('should display trade panel', async ({ page }) => {
-    await expect(page.locator('main').getByText('交易面板').first()).toBeVisible()
-    await expect(page.locator('main').getByText('选择商品').first()).toBeVisible()
-    await expect(page.locator('main').getByText('数量').first()).toBeVisible()
+  test('should display price mechanism explanation', async ({ page }) => {
+    await expect(page.locator('main').getByText('价格机制说明').first()).toBeVisible()
+    await expect(page.locator('main').getByText('库存 0%-20%').first()).toBeVisible()
+    await expect(page.locator('main').getByText('库存 20%-50%').first()).toBeVisible()
   })
 })

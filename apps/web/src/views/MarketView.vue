@@ -1,13 +1,16 @@
 <template>
   <div class="p-6">
     <h1 class="text-2xl font-bold text-white mb-6">
-      市场
+      价格系统
     </h1>
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
       <div class="bg-slate-800 rounded-lg p-4">
         <h2 class="text-lg font-bold text-white mb-4">
           商品价格
         </h2>
+        <p class="text-slate-400 text-sm mb-4">
+          价格根据各地块库存动态调整。库存越低，价格越高。
+        </p>
         <div class="space-y-2">
           <div
             v-for="good in goods"
@@ -16,57 +19,36 @@
           >
             <div>
               <span class="text-white font-medium">{{ good.name }}</span>
-              <span class="text-green-400 text-sm ml-2">+{{ good.change }}%</span>
+              <span class="text-slate-400 text-sm ml-2">基准价格: ¥{{ good.basePrice }}</span>
             </div>
-            <span class="text-white font-mono">¥{{ good.price.toFixed(2) }}</span>
+            <div class="text-right">
+              <div class="text-white font-mono">¥{{ good.currentPrice.toFixed(2) }}</div>
+              <div class="text-xs text-slate-400">
+                库存: {{ good.inventory }} / {{ good.capacity }}
+              </div>
+            </div>
           </div>
         </div>
       </div>
 
       <div class="bg-slate-800 rounded-lg p-4">
         <h2 class="text-lg font-bold text-white mb-4">
-          交易面板
+          价格机制说明
         </h2>
-        <div class="space-y-4">
-          <div>
-            <label class="block text-slate-300 mb-2">选择商品</label>
-            <select
-              v-model="selectedGood"
-              class="w-full bg-slate-700 text-white p-2 rounded border border-slate-600"
-            >
-              <option
-                v-for="good in goods"
-                :key="good.id"
-                :value="good.id"
-              >
-                {{ good.name }}
-              </option>
-            </select>
-          </div>
-          <div>
-            <label class="block text-slate-300 mb-2">数量</label>
-            <input
-              v-model.number="tradeAmount"
-              type="number"
-              min="1"
-              class="w-full bg-slate-700 text-white p-2 rounded border border-slate-600"
-              placeholder="输入数量"
-            >
-          </div>
-          <div class="grid grid-cols-2 gap-2">
-            <button
-              class="bg-green-600 hover:bg-green-700 text-white py-2 px-4 rounded transition-colors"
-              @click="buyGood"
-            >
-              买入
-            </button>
-            <button
-              class="bg-red-600 hover:bg-red-700 text-white py-2 px-4 rounded transition-colors"
-              @click="sellGood"
-            >
-              卖出
-            </button>
-          </div>
+        <div class="text-slate-300 text-sm space-y-3">
+          <p>
+            价格根据库存占比动态调整，每个地块独立计算：
+          </p>
+          <ul class="list-disc list-inside space-y-1 text-slate-400">
+            <li>库存 0%-20%: 价格 1.0x → 5.0x（库存极度稀缺）</li>
+            <li>库存 20%-50%: 价格 1.0x → 1.5x（库存不足）</li>
+            <li>库存 50%: 价格 1.0x（库存平衡）</li>
+            <li>库存 50%-80%: 价格 1.0x → 0.67x（库存充裕）</li>
+            <li>库存 80%-100%: 价格 0.67x → 0.2x（库存过剩）</li>
+          </ul>
+          <p class="text-yellow-400">
+            注意：玩家无法手动买卖物品，价格仅用于生产计算。
+          </p>
         </div>
       </div>
     </div>
@@ -74,28 +56,51 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue'
+import { ref, computed, onMounted } from 'vue'
 import { useGame } from '../composables/useGame'
+import { GOODS_CONFIG } from '@webvic3/core'
 
 const game = useGame()
 
-const selectedGood = ref('food')
-const tradeAmount = ref(10)
+const goods = computed(() => {
+  const state = game.state.value
+  if (!state) {
+    return Object.entries(GOODS_CONFIG).map(([id, config]) => ({
+      id,
+      name: config.name,
+      basePrice: config.basePrice,
+      currentPrice: config.basePrice,
+      inventory: 0,
+      capacity: 1000
+    }))
+  }
 
-const goods = [
-  { id: 'food', name: '粮食', price: 10, change: 2.5 },
-  { id: 'wood', name: '木材', price: 15, change: -1.2 },
-  { id: 'stone', name: '石头', price: 8, change: 0.8 },
-  { id: 'iron', name: '钢铁', price: 50, change: 5.3 }
-]
+  const globalStorage = state.globalStorage
+  const defaultCapacity = 1000
 
-const buyGood = () => {
-  if (tradeAmount.value <= 0) return
-  game.purchaseGood(selectedGood.value, tradeAmount.value)
-}
+  return Object.entries(GOODS_CONFIG).map(([id, config]) => {
+    const inventory = globalStorage.get(id) || 0
+    const ratio = Math.min(1, Math.max(0, inventory / defaultCapacity))
+    let multiplier = 1
 
-const sellGood = () => {
-  if (tradeAmount.value <= 0) return
-  game.sellGood(selectedGood.value, tradeAmount.value)
-}
+    if (ratio <= 0.2) {
+      multiplier = ratio <= 0 ? 5 : 1 + (ratio - 0.2) / 0.2 * 4
+    } else if (ratio <= 0.5) {
+      multiplier = 1 + (0.5 - ratio) / 0.3 * 0.5
+    } else if (ratio <= 0.8) {
+      multiplier = 1 - (ratio - 0.5) / 0.3 * 0.33
+    } else {
+      multiplier = 0.67 - (ratio - 0.8) / 0.2 * 0.47
+    }
+
+    return {
+      id,
+      name: config.name,
+      basePrice: config.basePrice,
+      currentPrice: config.basePrice * multiplier,
+      inventory,
+      capacity: defaultCapacity
+    }
+  })
+})
 </script>

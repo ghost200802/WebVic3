@@ -150,45 +150,7 @@ export function useGame() {
     addAlert('success', '生产方式已更新', '生产方式已成功更新')
   }
 
-  const purchaseGood = (goodId: string, amount: number) => {
-    const prices: Record<string, number> = {
-      food: 10,
-      wood: 15,
-      stone: 8,
-      iron: 50
-    }
-    const price = prices[goodId] || 10
-    const cost = price * amount
 
-    if (state.value?.resources.money && state.value.resources.money >= cost) {
-      provider.dispatch(setResourceMoney(state.value.resources.money - cost))
-      const current = state.value.resources.goods.get(goodId) || 0
-      provider.dispatch(setGoodsQuantity(goodId, current + amount))
-      addAlert('success', '购买成功', `购买了${amount}单位${goodId}，花费¥${cost}`)
-    } else {
-      addAlert('error', '购买失败', '资金不足')
-    }
-  }
-
-  const sellGood = (goodId: string, amount: number) => {
-    const prices: Record<string, number> = {
-      food: 10,
-      wood: 15,
-      stone: 8,
-      iron: 50
-    }
-    const price = prices[goodId] || 10
-    const revenue = price * amount
-    const current = state.value?.resources.goods.get(goodId) || 0
-
-    if (current >= amount) {
-      provider.dispatch(setResourceMoney((state.value?.resources.money || 0) + revenue))
-      provider.dispatch(setGoodsQuantity(goodId, current - amount))
-      addAlert('success', '出售成功', `出售了${amount}单位${goodId}，获得¥${revenue}`)
-    } else {
-      addAlert('error', '出售失败', '库存不足')
-    }
-  }
 
   const reset = () => {
     stopTicking()
@@ -220,8 +182,6 @@ export function useGame() {
     removeBuilding,
     updateBuildingWorkers,
     updateProductionMethod,
-    purchaseGood,
-    sellGood,
     reset
   }
 }
