@@ -46,6 +46,8 @@ export class SaveSerializer implements ISaveSerializer {
       date: state.date,
       era: state.era,
       tickCount: state.tickCount,
+      isPaused: state.isPaused,
+      timeMultiplier: state.timeMultiplier,
       tiles: this.serializeMap(state.tiles),
       buildings: this.serializeMap(state.buildings),
       populations: this.serializeMap(state.populations),
@@ -60,7 +62,8 @@ export class SaveSerializer implements ISaveSerializer {
         money: state.resources.money,
         goods: this.serializeMap(state.resources.goods)
       },
-      settings: state.settings
+      settings: state.settings,
+      notifications: state.notifications
     }
   }
 
@@ -72,6 +75,8 @@ export class SaveSerializer implements ISaveSerializer {
       date: data.date,
       era: data.era,
       tickCount: data.tickCount,
+      isPaused: data.isPaused || false,
+      timeMultiplier: data.timeMultiplier || 1,
       tiles: this.deserializeMap(data.tiles),
       buildings: this.deserializeMap(data.buildings),
       populations: this.deserializeMap(data.populations),
@@ -82,7 +87,8 @@ export class SaveSerializer implements ISaveSerializer {
         money: data.resources.money,
         goods: this.deserializeMap(data.resources.goods)
       },
-      settings: data.settings
+      settings: data.settings,
+      notifications: data.notifications || []
     }
   }
 
