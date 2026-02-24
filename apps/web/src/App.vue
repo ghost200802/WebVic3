@@ -20,6 +20,10 @@ onMounted(() => {
   }
   isReady.value = true
   game.startTicking()
+  
+  if (typeof window !== 'undefined') {
+    (window as any).__game = game
+  }
 })
 </script>
 

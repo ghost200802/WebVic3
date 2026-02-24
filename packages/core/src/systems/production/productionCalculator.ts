@@ -9,6 +9,12 @@ export interface IProductionCalculator {
     toolAvailability: number
   ): ProductionResult
   calculateUpgradeCost(building: Building): Record<string, number>
+  calculateDisplayOutput(
+    building: Building,
+    era: Era,
+    educationLevel: number,
+    toolAvailability: number
+  ): number
 }
 
 export class ProductionCalculator implements IProductionCalculator {
@@ -56,21 +62,19 @@ export class ProductionCalculator implements IProductionCalculator {
     const educationBonus = this.EDUCATION_BONUS[Math.min(educationLevel, 6)]
     const efficiency = eraBonus * educationBonus * toolAvailability * method.workerEfficiency
 
-    const throughput = building.baseThroughput * efficiency * (building.currentWorkers / building.baseWorkers)
+    const workerRatio = building.baseWorkers > 0 ? building.currentWorkers / building.baseWorkers : 0
     const levelBonus = 1 + (building.level - 1) * 0.1
-
-    const adjustedThroughput = throughput * levelBonus
 
     const inputs = new Map<string, number>()
     const outputs = new Map<string, number>()
 
     for (const [goodsId, amount] of Object.entries(method.inputs)) {
-      const adjustedAmount = amount * adjustedThroughput
+      const adjustedAmount = amount * method.throughputModifier * efficiency * workerRatio * levelBonus
       inputs.set(goodsId, adjustedAmount)
     }
 
     for (const [goodsId, amount] of Object.entries(method.outputs)) {
-      const adjustedAmount = amount * adjustedThroughput
+      const adjustedAmount = amount * method.throughputModifier * efficiency * workerRatio * levelBonus
       outputs.set(goodsId, adjustedAmount)
     }
 
@@ -79,6 +83,20 @@ export class ProductionCalculator implements IProductionCalculator {
       outputs,
       efficiency
     }
+  }
+
+  calculateDisplayOutput(
+    building: Building,
+    era: Era,
+    educationLevel: number,
+    toolAvailability: number
+  ): number {
+    const result = this.calculateProduction(building, era, educationLevel, toolAvailability)
+    let totalOutput = 0
+    for (const amount of result.outputs.values()) {
+      totalOutput += amount
+    }
+    return totalOutput
   }
 
   calculateUpgradeCost(building: Building): Record<string, number> {

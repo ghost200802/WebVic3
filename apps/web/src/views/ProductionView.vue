@@ -27,7 +27,7 @@
               </button>
             </div>
             <div class="flex justify-between text-sm text-slate-300 mb-2">
-              <span>工人: {{ building.workers }}/{{ building.maxWorkers * building.count }}</span>
+              <span>工人: {{ building.workers }}/{{ building.maxWorkers }}</span>
               <span>产量: {{ Math.round(calculateOutput(building)) }}/天</span>
             </div>
             <div class="flex justify-between text-sm text-slate-300 mb-2">
@@ -39,7 +39,7 @@
                 <input
                   type="range"
                   :min="0"
-                  :max="building.maxWorkers * building.count"
+                  :max="building.maxWorkers"
                   :value="building.workers"
                   @input="updateWorkers(building, parseInt(($event.target as HTMLInputElement).value))"
                   class="flex-1 accent-blue-600"
@@ -168,9 +168,10 @@
 <script setup lang="ts">
 import { ref, computed } from 'vue'
 import { useGame } from '../composables/useGame'
-import { BuildingType, PRODUCTION_METHODS, BUILDING_CONFIGS } from '@webvic3/core'
+import { BuildingType, PRODUCTION_METHODS, BUILDING_CONFIGS, Era, ProductionCalculator } from '@webvic3/core'
 
 const game = useGame()
+const calculator = new ProductionCalculator()
 
 const selectedTileId = ref('tile_1')
 
@@ -205,10 +206,14 @@ const setProductionMethod = (building: any, methodId: string) => {
 }
 
 const calculateOutput = (building: any) => {
-  const method = PRODUCTION_METHODS[building.productionMethods[0]]
-  const methodEfficiency = method ? method.workerEfficiency : 1.0
-  const workerRatio = building.baseWorkers > 0 ? building.workers / (building.baseWorkers * building.count) : 0
-  return building.baseThroughput * building.count * workerRatio * building.efficiency * methodEfficiency
+  if (!game.state.value) return 0
+  
+  return calculator.calculateDisplayOutput(
+    building,
+    game.state.value.era,
+    2,
+    1.0
+  )
 }
 
 const globalStorage = computed(() => {

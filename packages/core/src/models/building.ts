@@ -57,7 +57,7 @@ export const BUILDING_CONFIGS: Record<string, BuildingConfig> = {
     constructionCost: { wood: 15 },
     constructionTime: 25,
     area: 40,
-    productionMethods: []
+    productionMethods: ['grazing', 'livestock', 'intensive_ranching']
   },
   forestry: {
     id: 'forestry',
@@ -70,7 +70,7 @@ export const BUILDING_CONFIGS: Record<string, BuildingConfig> = {
     constructionCost: { wood: 5 },
     constructionTime: 20,
     area: 20,
-    productionMethods: []
+    productionMethods: ['gathering', 'logging', 'modern_forestry']
   },
   fishery: {
     id: 'fishery',
@@ -83,7 +83,7 @@ export const BUILDING_CONFIGS: Record<string, BuildingConfig> = {
     constructionCost: { wood: 8 },
     constructionTime: 15,
     area: 30,
-    productionMethods: []
+    productionMethods: ['fishing', 'aquaculture', 'modern_fishing']
   },
   quarry: {
     id: 'quarry',
@@ -96,7 +96,7 @@ export const BUILDING_CONFIGS: Record<string, BuildingConfig> = {
     constructionCost: { wood: 10 },
     constructionTime: 35,
     area: 45,
-    productionMethods: []
+    productionMethods: ['manual_mining', 'mechanized_quarry']
   },
   mine: {
     id: 'mine',
@@ -109,7 +109,7 @@ export const BUILDING_CONFIGS: Record<string, BuildingConfig> = {
     constructionCost: { wood: 20, stone: 15 },
     constructionTime: 50,
     area: 55,
-    productionMethods: []
+    productionMethods: ['surface_mining', 'underground_mining', 'modern_mining']
   },
   workshop: {
     id: 'workshop',

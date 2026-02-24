@@ -1,6 +1,7 @@
 import { GameState } from '../models/gameState'
 import { GameAction, ActionTypes } from './actions'
 import { BUILDING_CONFIGS } from '../models/building'
+import { ProductionCalculator } from '../systems/production/productionCalculator'
 
 export const rootReducer = (state: GameState, action: GameAction): GameState => {
   switch (action.type) {
@@ -79,10 +80,58 @@ const tickTimeReducer = (state: GameState, action: GameAction): GameState => {
     day: newDay
   }
   
+  const calculator = new ProductionCalculator()
+  const productionUpdates = new Map<string, Map<string, number>>()
+  
+  console.log('[tickTimeReducer] Processing tick', { tickCount: state.tickCount, buildings: state.buildings.size })
+  
+  for (const [buildingId, building] of state.buildings) {
+    console.log('[tickTimeReducer] Checking building:', { buildingId, type: building.type, workers: building.currentWorkers, baseWorkers: building.baseWorkers, baseThroughput: building.baseThroughput, productionMethods: building.productionMethods })
+    if (building.currentWorkers > 0) {
+      const result = calculator.calculateProduction(
+        building,
+        state.era,
+        2,
+        1.0
+      )
+      
+      console.log('[tickTimeReducer] Production result:', { buildingId, efficiency: result.efficiency, inputs: Array.from(result.inputs.entries()), outputs: Array.from(result.outputs.entries()) })
+      
+      for (const [goodsId, amount] of result.outputs) {
+        if (!productionUpdates.has(building.tileId)) {
+          productionUpdates.set(building.tileId, new Map())
+        }
+        const tileUpdates = productionUpdates.get(building.tileId)!
+        const currentAmount = tileUpdates.get(goodsId) || 0
+        tileUpdates.set(goodsId, currentAmount + Math.floor(amount))
+      }
+    }
+  }
+  
+  console.log('[tickTimeReducer] Production updates:', { updates: Array.from(productionUpdates.entries()).map(([tileId, updates]) => ({ tileId, goods: Array.from(updates.entries()) })) })
+  
+  const newTiles = new Map(state.tiles)
+  for (const [tileId, updates] of productionUpdates) {
+    const tile = newTiles.get(tileId)
+    if (tile) {
+      const newStorage = new Map(tile.storage)
+      for (const [goodsId, amount] of updates) {
+        const currentAmount = newStorage.get(goodsId) || 0
+        newStorage.set(goodsId, currentAmount + amount)
+      }
+      console.log('[tickTimeReducer] Updated tile storage:', { tileId, storage: Array.from(newStorage.entries()) })
+      newTiles.set(tileId, {
+        ...tile,
+        storage: newStorage
+      })
+    }
+  }
+  
   return {
     ...state,
     date: newDate,
-    tickCount: state.tickCount + 1
+    tickCount: state.tickCount + 1,
+    tiles: newTiles
   }
 }
 

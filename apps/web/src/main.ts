@@ -7,3 +7,7 @@ const app = createApp(App)
 
 app.use(router)
 app.mount('#app')
+
+if (typeof window !== 'undefined') {
+  (window as any).__app = app
+}

@@ -352,15 +352,24 @@ export const getBuildingName = (type: BuildingType): string => {
 
 export const getExtendedBuildings = (state: GameState): ExtendedBuilding[] => {
   const buildings: ExtendedBuilding[] = []
-  const buildingCounts = new Map<BuildingType, { count: number; workers: number }>()
+  const buildingCounts = new Map<BuildingType, { count: number; workers: number; totalBaseWorkers: number; totalMaxWorkers: number; totalBaseThroughput: number }>()
 
   for (const [_, building] of state.buildings) {
     const existing = buildingCounts.get(building.type)
     if (existing) {
       existing.count++
       existing.workers += building.currentWorkers
+      existing.totalBaseWorkers += building.baseWorkers
+      existing.totalMaxWorkers += building.maxWorkers
+      existing.totalBaseThroughput += building.baseThroughput
     } else {
-      buildingCounts.set(building.type, { count: 1, workers: building.currentWorkers })
+      buildingCounts.set(building.type, { 
+        count: 1, 
+        workers: building.currentWorkers,
+        totalBaseWorkers: building.baseWorkers,
+        totalMaxWorkers: building.maxWorkers,
+        totalBaseThroughput: building.baseThroughput
+      })
     }
   }
 
@@ -369,6 +378,9 @@ export const getExtendedBuildings = (state: GameState): ExtendedBuilding[] => {
     if (sampleBuilding) {
       buildings.push({
         ...sampleBuilding,
+        baseWorkers: data.totalBaseWorkers,
+        maxWorkers: data.totalMaxWorkers,
+        baseThroughput: data.totalBaseThroughput,
         efficiency: 1.0,
         workers: data.workers,
         count: data.count
