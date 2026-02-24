@@ -1,17 +1,42 @@
 <template>
   <div class="p-6">
-    <h1 class="text-2xl font-bold text-white mb-6">仪表盘</h1>
+    <h1 class="text-2xl font-bold text-white mb-6">
+      仪表盘
+    </h1>
 
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
-      <StatCard icon="👥" label="人口" :value="population.toLocaleString()" />
-      <StatCard icon="💰" label="资金" :value="'¥' + treasury.toLocaleString()" />
-      <StatCard icon="🎯" label="时代" :value="era || '-'" />
-      <StatCard icon="📅" label="日期" :value="formatDate" />
+      <StatCard
+        icon="👥"
+        label="人口"
+        :value="population.toLocaleString()"
+      />
+      <StatCard
+        icon="💰"
+        label="资金"
+        :value="'¥' + treasury.toLocaleString()"
+      />
+      <StatCard
+        icon="🎯"
+        label="时代"
+        :value="era || '-'"
+      />
+      <StatCard
+        icon="📅"
+        label="日期"
+        :value="formatDate"
+      />
+      <StatCard
+        icon="⏱️"
+        label="Tick"
+        :value="tickCount.toString()"
+      />
     </div>
 
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
       <div class="bg-slate-800 rounded-lg p-4">
-        <h2 class="text-lg font-bold text-white mb-4">生产概况</h2>
+        <h2 class="text-lg font-bold text-white mb-4">
+          生产概况
+        </h2>
         <div class="space-y-3">
           <div class="flex justify-between text-slate-300">
             <span>建筑总数</span>
@@ -33,7 +58,9 @@
       </div>
 
       <div class="bg-slate-800 rounded-lg p-4">
-        <h2 class="text-lg font-bold text-white mb-4">活跃事件</h2>
+        <h2 class="text-lg font-bold text-white mb-4">
+          活跃事件
+        </h2>
         <div class="space-y-2">
           <div
             v-for="alert in alerts"
@@ -43,13 +70,21 @@
           >
             <div class="flex items-center justify-between">
               <span class="font-medium">{{ alert.title }}</span>
-              <button @click="removeAlert(alert.id)" class="text-white/70 hover:text-white">
+              <button
+                class="text-white/70 hover:text-white"
+                @click="removeAlert(alert.id)"
+              >
                 ✕
               </button>
             </div>
-            <p class="text-sm mt-1 opacity-90">{{ alert.message }}</p>
+            <p class="text-sm mt-1 opacity-90">
+              {{ alert.message }}
+            </p>
           </div>
-          <div v-if="alerts.length === 0" class="text-slate-400 text-center py-4">
+          <div
+            v-if="alerts.length === 0"
+            class="text-slate-400 text-center py-4"
+          >
             暂无事件
           </div>
         </div>
@@ -60,16 +95,16 @@
 
 <script setup lang="ts">
 import { computed, onMounted } from 'vue'
-import { useGameStore } from '../stores/gameStore'
+import { useGame } from '../composables/useGame'
 import { Era, BuildingType } from '@webvic3/core'
 import StatCard from '../components/dashboard/StatCard.vue'
 
-const gameStore = useGameStore()
+const game = useGame()
 
-const population = computed(() => gameStore.population)
-const treasury = computed(() => gameStore.treasury)
+const population = computed(() => game.population.value)
+const treasury = computed(() => game.treasury.value)
 const era = computed(() => {
-  const eraValue = gameStore.era
+  const eraValue = game.era.value
   if (!eraValue) return '-'
   const eraLabels: Record<string, string> = {
     [Era.STONE_AGE]: '石器时代',
@@ -85,9 +120,10 @@ const era = computed(() => {
   }
   return eraLabels[eraValue] || eraValue
 })
-const gameDate = computed(() => gameStore.gameDate)
-const alerts = computed(() => gameStore.alerts)
-const buildings = computed(() => gameStore.buildings)
+const gameDate = computed(() => game.gameDate.value)
+const alerts = computed(() => game.alerts.value)
+const buildings = computed(() => game.buildings.value)
+const tickCount = computed(() => game.state.value?.tickCount || 0)
 
 const forestryEfficiency = computed(() => {
   const building = buildings.value.find(b => b.type === BuildingType.FORESTRY)
@@ -121,13 +157,6 @@ const getAlertClass = (type: string) => {
 }
 
 const removeAlert = (id: string) => {
-  gameStore.removeAlert(id)
+  game.removeAlert(id)
 }
-
-onMounted(() => {
-  if (!gameStore.gameState) {
-    gameStore.initializeGame()
-  }
-  gameStore.startTicking()
-})
 </script>

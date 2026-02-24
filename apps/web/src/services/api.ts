@@ -25,11 +25,6 @@ interface Save {
   updatedAt: Date
 }
 
-interface CreateSaveRequest {
-  name: string
-  gameState: Record<string, unknown>
-}
-
 class ApiService {
   private token: string | null = null
 

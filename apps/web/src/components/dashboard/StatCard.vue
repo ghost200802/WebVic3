@@ -3,8 +3,12 @@
     <div class="flex items-center space-x-3">
       <span class="text-3xl">{{ icon }}</span>
       <div>
-        <p class="text-slate-400 text-sm">{{ label }}</p>
-        <p class="text-white text-2xl font-bold">{{ value }}</p>
+        <p class="text-slate-400 text-sm">
+          {{ label }}
+        </p>
+        <p class="text-white text-2xl font-bold">
+          {{ value }}
+        </p>
       </div>
     </div>
   </div>

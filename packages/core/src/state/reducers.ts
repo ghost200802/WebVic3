@@ -41,6 +41,12 @@ export const rootReducer = (state: GameState, action: GameAction): GameState => 
       return addNotificationReducer(state, action)
     case ActionTypes.REMOVE_NOTIFICATION:
       return removeNotificationReducer(state, action)
+    case ActionTypes.SET_RESOURCE_MONEY:
+      return setResourceMoneyReducer(state, action)
+    case ActionTypes.SET_GOODS_QUANTITY:
+      return setGoodsQuantityReducer(state, action)
+    case ActionTypes.ADD_POPULATION:
+      return addPopulationReducer(state, action)
     default:
       return state
   }
@@ -340,6 +346,53 @@ const removeNotificationReducer = (state: GameState, action: GameAction): GameSt
   return {
     ...state,
     notifications: state.notifications.filter(n => n.id !== id)
+  }
+}
+
+const setResourceMoneyReducer = (state: GameState, action: GameAction): GameState => {
+  const { amount } = action.payload || {}
+  
+  return {
+    ...state,
+    resources: {
+      ...state.resources,
+      money: amount
+    }
+  }
+}
+
+const setGoodsQuantityReducer = (state: GameState, action: GameAction): GameState => {
+  const { goodsId, amount } = action.payload || {}
+  
+  return {
+    ...state,
+    resources: {
+      ...state.resources,
+      goods: new Map(state.resources.goods).set(goodsId, amount)
+    }
+  }
+}
+
+const addPopulationReducer = (state: GameState, action: GameAction): GameState => {
+  const payload = action.payload || {}
+  
+  return {
+    ...state,
+    populations: new Map(state.populations).set(payload.populationId, {
+      id: payload.populationId,
+      tileId: payload.tileId,
+      totalPopulation: payload.totalPopulation,
+      groups: payload.groups,
+      ageDistribution: payload.ageDistribution,
+      educationDistribution: payload.educationDistribution,
+      classDistribution: payload.classDistribution,
+      employment: payload.employment,
+      averageWage: payload.averageWage,
+      averageLivingStandard: payload.averageLivingStandard,
+      birthRate: payload.birthRate,
+      deathRate: payload.deathRate,
+      netMigration: payload.netMigration
+    })
   }
 }
 

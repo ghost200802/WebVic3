@@ -1,9 +1,13 @@
 <template>
   <div class="p-6">
-    <h1 class="text-2xl font-bold text-white mb-6">科技研发</h1>
+    <h1 class="text-2xl font-bold text-white mb-6">
+      科技研发
+    </h1>
     <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
       <div class="lg:col-span-2 bg-slate-800 rounded-lg p-4">
-        <h2 class="text-lg font-bold text-white mb-4">科技树</h2>
+        <h2 class="text-lg font-bold text-white mb-4">
+          科技树
+        </h2>
         <div class="space-y-3">
           <div
             v-for="tech in technologies"
@@ -20,8 +24,13 @@
                 {{ getStatusText(tech.status) }}
               </span>
             </div>
-            <p class="text-sm text-slate-400 mb-2">{{ tech.description }}</p>
-            <div v-if="tech.status === 'researching'" class="mb-2">
+            <p class="text-sm text-slate-400 mb-2">
+              {{ tech.description }}
+            </p>
+            <div
+              v-if="tech.status === 'researching'"
+              class="mb-2"
+            >
               <div class="flex justify-between text-sm text-slate-300 mb-1">
                 <span>进度</span>
                 <span class="font-mono">{{ tech.progress }}/{{ tech.cost }}</span>
@@ -30,7 +39,7 @@
                 <div
                   class="bg-blue-500 h-full"
                   :style="{ width: (tech.progress / tech.cost * 100) + '%' }"
-                ></div>
+                />
               </div>
             </div>
             <div class="text-sm text-slate-300">
@@ -42,7 +51,9 @@
       </div>
 
       <div class="bg-slate-800 rounded-lg p-4">
-        <h2 class="text-lg font-bold text-white mb-4">研发队列</h2>
+        <h2 class="text-lg font-bold text-white mb-4">
+          研发队列
+        </h2>
         <div class="space-y-3">
           <div
             v-for="tech in researchQueue"
@@ -52,13 +63,16 @@
             <div class="flex justify-between items-center mb-2">
               <span class="font-medium text-white">{{ tech.name }}</span>
               <button
-                @click="removeFromQueue(tech.id)"
                 class="text-slate-400 hover:text-white text-sm"
+                @click="removeFromQueue(tech.id)"
               >
                 ✕
               </button>
             </div>
-            <div v-if="tech.isCurrent" class="mb-2">
+            <div
+              v-if="tech.isCurrent"
+              class="mb-2"
+            >
               <div class="flex justify-between text-sm text-slate-300 mb-1">
                 <span>进度</span>
                 <span class="font-mono">{{ Math.round(tech.progress / tech.cost * 100) }}%</span>
@@ -67,14 +81,20 @@
                 <div
                   class="bg-blue-500 h-full"
                   :style="{ width: (tech.progress / tech.cost * 100) + '%' }"
-                ></div>
+                />
               </div>
             </div>
-            <p v-if="tech.isCurrent" class="text-sm text-slate-400">
+            <p
+              v-if="tech.isCurrent"
+              class="text-sm text-slate-400"
+            >
               预计完成: {{ tech.daysLeft }}天后
             </p>
           </div>
-          <div v-if="researchQueue.length === 0" class="text-slate-400 text-center py-4 text-sm">
+          <div
+            v-if="researchQueue.length === 0"
+            class="text-slate-400 text-center py-4 text-sm"
+          >
             研发队列为空
           </div>
           <div class="text-slate-400 text-center py-4 text-sm">
@@ -88,9 +108,9 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import { useGameStore } from '../stores/gameStore'
+import { useGame } from '../composables/useGame'
 
-const gameStore = useGameStore()
+const game = useGame()
 
 const techData = [
   { id: 'stone_tool', name: '石器制作', description: '学会制作石器，提高狩猎和采集效率', cost: 50 },
@@ -100,8 +120,8 @@ const techData = [
 ]
 
 const technologies = computed(() => {
-  const queue = gameStore.gameState?.researchQueue
-  const ownedTechs = gameStore.gameState?.technologies || new Set()
+  const queue = game.state.value?.researchQueue
+  const ownedTechs = game.state.value?.technologies || new Set()
   
   return techData.map(tech => {
     let status = 'locked'
@@ -129,7 +149,7 @@ const technologies = computed(() => {
 })
 
 const researchQueue = computed(() => {
-  const queue = gameStore.gameState?.researchQueue
+  const queue = game.state.value?.researchQueue
   if (!queue) return []
   
   const result = []
@@ -186,7 +206,7 @@ const getStatusText = (status: string) => {
 }
 
 const removeFromQueue = (techId: string) => {
-  const queue = gameStore.gameState?.researchQueue
+  const queue = game.state.value?.researchQueue
   if (!queue) return
   
   if (queue.current?.tech === techId) {

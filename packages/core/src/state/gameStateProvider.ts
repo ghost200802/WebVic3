@@ -5,6 +5,7 @@ import { rootReducer } from './reducers'
 export type StateListener = (state: GameState, previousState: GameState) => void
 
 export interface IGameStateProvider {
+  initialize(initialState: GameState): void
   getState(): GameState
   dispatch(action: GameAction): void
   subscribe(listener: StateListener): () => void
@@ -14,19 +15,26 @@ export interface IGameStateProvider {
 }
 
 export class GameStateProvider implements IGameStateProvider {
-  private _state: GameState
+  private _state: GameState | null
   private _listeners: Set<StateListener>
   private _actionQueue: GameAction[]
   private _isProcessingQueue: boolean
 
-  constructor(initialState: GameState) {
-    this._state = initialState
+  constructor() {
+    this._state = null
     this._listeners = new Set()
     this._actionQueue = []
     this._isProcessingQueue = false
   }
 
+  initialize(initialState: GameState): void {
+    this._state = initialState
+  }
+
   getState(): GameState {
+    if (!this._state) {
+      throw new Error('GameStateProvider not initialized. Call initialize() first.')
+    }
     return this._state
   }
 
@@ -44,6 +52,8 @@ export class GameStateProvider implements IGameStateProvider {
     while (this._actionQueue.length > 0) {
       const action = this._actionQueue.shift()
       if (!action) continue
+
+      if (!this._state) return
 
       const previousState = this._state
       const newState = rootReducer(previousState, action)
@@ -78,6 +88,10 @@ export class GameStateProvider implements IGameStateProvider {
   }
 
   getPersistedState(): PersistedState {
+    if (!this._state) {
+      throw new Error('GameStateProvider not initialized. Call initialize() first.')
+    }
+
     const { isPaused, timeMultiplier, notifications, researchQueue, ...rest } = this._state
 
     return {
@@ -112,7 +126,9 @@ export class GameStateProvider implements IGameStateProvider {
 
     const previousState = this._state
     this._state = restoredState
-    this._notifyListeners(previousState, restoredState)
+    if (previousState) {
+      this._notifyListeners(previousState, restoredState)
+    }
   }
 
   dispatchBatch(actions: GameAction[]): void {
@@ -129,6 +145,6 @@ export class GameStateProvider implements IGameStateProvider {
   }
 }
 
-export const createGameStateProvider = (initialState: GameState): IGameStateProvider => {
-  return new GameStateProvider(initialState)
+export const createGameStateProvider = (): IGameStateProvider => {
+  return new GameStateProvider()
 }

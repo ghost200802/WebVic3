@@ -6,8 +6,28 @@ test.describe('Game Mechanics', () => {
   })
 
   test('should increment game date over time', async ({ page }) => {
-    const dateText = await page.locator('main .font-mono').first().textContent()
-    expect(dateText).toBeTruthy()
+    const tickLabel = page.getByText('Tick', { exact: true })
+    await tickLabel.waitFor({ timeout: 5000 })
+    
+    const tickValue = tickLabel.locator('..').locator('.text-2xl')
+    const initialText = await tickValue.textContent()
+    console.log('Initial text:', initialText)
+    
+    if (initialText) {
+      const initialTick = parseInt(initialText.trim())
+      console.log('Initial tick count:', initialTick)
+      
+      await page.waitForTimeout(3000)
+      
+      const laterText = await tickValue.textContent()
+      console.log('Later text:', laterText)
+      
+      if (laterText) {
+        const laterTick = parseInt(laterText.trim())
+        console.log('Later tick count:', laterTick)
+        expect(laterTick).toBeGreaterThan(initialTick)
+      }
+    }
   })
 
   test('should display population stats', async ({ page }) => {

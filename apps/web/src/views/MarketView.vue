@@ -1,9 +1,13 @@
 <template>
   <div class="p-6">
-    <h1 class="text-2xl font-bold text-white mb-6">市场</h1>
+    <h1 class="text-2xl font-bold text-white mb-6">
+      市场
+    </h1>
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
       <div class="bg-slate-800 rounded-lg p-4">
-        <h2 class="text-lg font-bold text-white mb-4">商品价格</h2>
+        <h2 class="text-lg font-bold text-white mb-4">
+          商品价格
+        </h2>
         <div class="space-y-2">
           <div
             v-for="good in goods"
@@ -20,7 +24,9 @@
       </div>
 
       <div class="bg-slate-800 rounded-lg p-4">
-        <h2 class="text-lg font-bold text-white mb-4">交易面板</h2>
+        <h2 class="text-lg font-bold text-white mb-4">
+          交易面板
+        </h2>
         <div class="space-y-4">
           <div>
             <label class="block text-slate-300 mb-2">选择商品</label>
@@ -28,7 +34,11 @@
               v-model="selectedGood"
               class="w-full bg-slate-700 text-white p-2 rounded border border-slate-600"
             >
-              <option v-for="good in goods" :key="good.id" :value="good.id">
+              <option
+                v-for="good in goods"
+                :key="good.id"
+                :value="good.id"
+              >
                 {{ good.name }}
               </option>
             </select>
@@ -45,14 +55,14 @@
           </div>
           <div class="grid grid-cols-2 gap-2">
             <button
-              @click="buyGood"
               class="bg-green-600 hover:bg-green-700 text-white py-2 px-4 rounded transition-colors"
+              @click="buyGood"
             >
               买入
             </button>
             <button
-              @click="sellGood"
               class="bg-red-600 hover:bg-red-700 text-white py-2 px-4 rounded transition-colors"
+              @click="sellGood"
             >
               卖出
             </button>
@@ -64,10 +74,10 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed } from 'vue'
-import { useGameStore } from '../stores/gameStore'
+import { ref } from 'vue'
+import { useGame } from '../composables/useGame'
 
-const gameStore = useGameStore()
+const game = useGame()
 
 const selectedGood = ref('food')
 const tradeAmount = ref(10)
@@ -81,11 +91,11 @@ const goods = [
 
 const buyGood = () => {
   if (tradeAmount.value <= 0) return
-  gameStore.buyGood(selectedGood.value, tradeAmount.value)
+  game.purchaseGood(selectedGood.value, tradeAmount.value)
 }
 
 const sellGood = () => {
   if (tradeAmount.value <= 0) return
-  gameStore.sellGood(selectedGood.value, tradeAmount.value)
+  game.sellGood(selectedGood.value, tradeAmount.value)
 }
 </script>

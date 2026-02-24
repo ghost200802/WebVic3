@@ -1,9 +1,13 @@
 <template>
   <div class="p-6">
-    <h1 class="text-2xl font-bold text-white mb-6">生产管理</h1>
+    <h1 class="text-2xl font-bold text-white mb-6">
+      生产管理
+    </h1>
     <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
       <div class="lg:col-span-2 bg-slate-800 rounded-lg p-4">
-        <h2 class="text-lg font-bold text-white mb-4">建筑列表</h2>
+        <h2 class="text-lg font-bold text-white mb-4">
+          建筑列表
+        </h2>
         <div class="space-y-2">
           <div
             v-for="building in buildings"
@@ -22,36 +26,41 @@
               <span>产量: {{ Math.round(building.baseThroughput * building.count * building.efficiency) }}/天</span>
             </div>
           </div>
-          <div v-if="buildings.length === 0" class="text-slate-400 text-center py-8">
+          <div
+            v-if="buildings.length === 0"
+            class="text-slate-400 text-center py-8"
+          >
             暂无建筑，请在右侧建造新建筑
           </div>
         </div>
       </div>
 
       <div class="bg-slate-800 rounded-lg p-4">
-        <h2 class="text-lg font-bold text-white mb-4">建设面板</h2>
+        <h2 class="text-lg font-bold text-white mb-4">
+          建设面板
+        </h2>
         <div class="space-y-3">
           <button
-            @click="addBuilding(BuildingType.FORESTRY)"
             class="w-full bg-blue-600 hover:bg-blue-700 text-white py-2 px-4 rounded-lg transition-colors"
+            @click="addBuilding(BuildingType.FORESTRY)"
           >
             + 新建林场
           </button>
           <button
-            @click="addBuilding(BuildingType.FARM)"
             class="w-full bg-blue-600 hover:bg-blue-700 text-white py-2 px-4 rounded-lg transition-colors"
+            @click="addBuilding(BuildingType.FARM)"
           >
             + 新建农场
           </button>
           <button
-            @click="addBuilding(BuildingType.QUARRY)"
             class="w-full bg-blue-600 hover:bg-blue-700 text-white py-2 px-4 rounded-lg transition-colors"
+            @click="addBuilding(BuildingType.QUARRY)"
           >
             + 新建矿场
           </button>
           <button
-            @click="addBuilding(BuildingType.RANCH)"
             class="w-full bg-blue-600 hover:bg-blue-700 text-white py-2 px-4 rounded-lg transition-colors"
+            @click="addBuilding(BuildingType.RANCH)"
           >
             + 新建牧场
           </button>
@@ -63,14 +72,14 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import { useGameStore } from '../stores/gameStore'
+import { useGame } from '../composables/useGame'
 import { BuildingType } from '@webvic3/core'
 
-const gameStore = useGameStore()
+const game = useGame()
 
-const buildings = computed(() => gameStore.buildings)
+const buildings = computed(() => game.buildings.value)
 
 const addBuilding = (type: BuildingType) => {
-  gameStore.addBuilding(type)
+  game.createBuilding(type)
 }
 </script>

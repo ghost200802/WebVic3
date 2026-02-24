@@ -114,6 +114,31 @@ export interface NotificationPayload {
   timestamp: number
 }
 
+export interface SetResourceMoneyPayload {
+  amount: number
+}
+
+export interface SetGoodsQuantityPayload {
+  goodsId: string
+  amount: number
+}
+
+export interface AddPopulationPayload {
+  populationId: string
+  tileId: string
+  totalPopulation: number
+  groups: any[]
+  ageDistribution: any
+  educationDistribution: Record<string, number>
+  classDistribution: Record<string, number>
+  employment: any
+  averageWage: number
+  averageLivingStandard: number
+  birthRate: number
+  deathRate: number
+  netMigration: number
+}
+
 export const ActionTypes = {
   TICK_TIME: 'TICK_TIME',
   SET_PAUSE: 'SET_PAUSE',
@@ -133,7 +158,10 @@ export const ActionTypes = {
   REMOVE_TECH_FROM_QUEUE: 'REMOVE_TECH_FROM_QUEUE',
   UNLOCK_TECH: 'UNLOCK_TECH',
   ADD_NOTIFICATION: 'ADD_NOTIFICATION',
-  REMOVE_NOTIFICATION: 'REMOVE_NOTIFICATION'
+  REMOVE_NOTIFICATION: 'REMOVE_NOTIFICATION',
+  SET_RESOURCE_MONEY: 'SET_RESOURCE_MONEY',
+  SET_GOODS_QUANTITY: 'SET_GOODS_QUANTITY',
+  ADD_POPULATION: 'ADD_POPULATION'
 } as const
 
 export type ActionType = typeof ActionTypes[keyof typeof ActionTypes]
@@ -200,3 +228,12 @@ export const addNotification = (id: string, type: 'info' | 'warning' | 'error' |
 
 export const removeNotification = (id: string): GameAction =>
   createGameAction(ActionTypes.REMOVE_NOTIFICATION, { id })
+
+export const setResourceMoney = (amount: number): GameAction =>
+  createGameAction(ActionTypes.SET_RESOURCE_MONEY, { amount } as SetResourceMoneyPayload)
+
+export const setGoodsQuantity = (goodsId: string, amount: number): GameAction =>
+  createGameAction(ActionTypes.SET_GOODS_QUANTITY, { goodsId, amount } as SetGoodsQuantityPayload)
+
+export const addPopulation = (payload: AddPopulationPayload): GameAction =>
+  createGameAction(ActionTypes.ADD_POPULATION, payload)

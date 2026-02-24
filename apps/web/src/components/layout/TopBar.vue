@@ -29,9 +29,9 @@
 
     <div class="flex items-center space-x-4">
       <button
-        @click="togglePause"
         class="px-4 py-2 rounded-lg font-medium transition-colors"
         :class="isPaused ? 'bg-green-600 hover:bg-green-700' : 'bg-amber-600 hover:bg-amber-700'"
+        @click="togglePause"
       >
         {{ isPaused ? '▶ 继续' : '⏸ 暂停' }}
       </button>
@@ -41,15 +41,15 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import { useGameStore } from '../../stores/gameStore'
+import { useGame } from '../../composables/useGame'
 import { Era } from '@webvic3/core'
 
-const gameStore = useGameStore()
+const game = useGame()
 
-const isPaused = computed(() => gameStore.isPaused)
-const gameDate = computed(() => gameStore.gameDate)
+const isPaused = computed(() => game.state.value?.isPaused ?? false)
+const gameDate = computed(() => game.gameDate.value)
 const era = computed(() => {
-  const eraValue = gameStore.era
+  const eraValue = game.era.value
   if (!eraValue) return '-'
   const eraLabels: Record<string, string> = {
     [Era.STONE_AGE]: '石器时代',
@@ -65,9 +65,9 @@ const era = computed(() => {
   }
   return eraLabels[eraValue] || eraValue
 })
-const population = computed(() => gameStore.population)
-const treasury = computed(() => gameStore.treasury)
-const tickCount = computed(() => gameStore.gameState?.tickCount || 0)
+const population = computed(() => game.population.value)
+const treasury = computed(() => game.treasury.value)
+const tickCount = computed(() => game.state.value?.tickCount || 0)
 
 const formatDate = computed(() => {
   if (!gameDate.value) return '-'
@@ -77,9 +77,9 @@ const formatDate = computed(() => {
 
 const togglePause = () => {
   if (isPaused.value) {
-    gameStore.resume()
+    game.resume()
   } else {
-    gameStore.pause()
+    game.pause()
   }
 }
 </script>
